@@ -1,5 +1,5 @@
 # danmu_api 剧名映射表（由 MoviePilot 共享识别词自动转换）
-# 转换日期: 2026-08-22 | 规则数: 312（原始 194 + 裸标题变体 115 + 剧名×季组合键 3）
+# 转换日期: 2026-08-22 | 规则数: 317（原始 194 + 裸标题变体 117 + 剧名×季组合键 6）
 # 用法: danmu_api 环境变量 TITLE_MAPPING_TABLE_URL 填本文件的 raw 直链
 # 键形态：完整资源名 / 裸剧名 / 裸剧名 Sxx 三类，分别覆盖手动搜索与自动匹配场景
 # 季/集修正类规则不在此文件，见 season-candidates.txt（配置到 AUTO_MATCH_MAPPING_TABLE）
@@ -201,46 +201,42 @@ Kureyon.Shinchan.Gekitotsu.Rakugakingudamu.to.Hobo.Shi-Ri.no.Yusha->蜡笔小新
 VTuber nanda ga->VTuber.nandaga
 2 5 次元的誘惑->2.5次元的诱惑
 Tian Xing Jiu Ge->天行九歌
+ATRI My Dear Moments->亚托莉 -我挚爱的时光-
 Soul Land->Soul Land II: The Unrivaled Tang
 斗罗大陆.Soul.Land->Soul Land II: The Unrivaled Tang
 斗罗大陆 Soul Land S02->Soul Land II: The Unrivaled Tang
-斗罗大陆 Soul Land->Soul Land II: The Unrivaled Tang
 HuaJiangHu BuLiangRen S->画江湖之不良人
 Heaven.Dragon.the.Eighth.Episode->天龙八部
 Heaven Dragon the Eighth Episode 2003->天龙八部
-Heaven Dragon the Eighth Episode->天龙八部
 Moving->超异能族
 Moving S01->超异能族
 Happily.Ever.After->婚后事
 Happily Ever After 2024->婚后事
-Happily Ever After->婚后事
 Always on the Move->南来北往
 Black Mirror->黑镜
 Zhi Neng Shi Dai->智能时代 第一季
 Madame Web->蜘蛛夫人：超感觉醒
 3.Body.Problem->三体
 3 Body Problem 2024->三体
-3 Body Problem->三体
 Reply->请回答
 Suspect->超意神探
 Suspect 2024->超意神探
 Noble Aspirations->青云志
 Psycho.Detective.2->诡探前传
 Psycho Detective 2 2019->诡探前传
-Psycho Detective 2->诡探前传
 Psycho.Detective->诡探
 Psycho Detective 2017->诡探
-Psycho Detective->诡探
 十品官吴山羊 P->十品官吴山羊
 The.Last.Cook->末代厨娘
 The Last Cook 2024 S01->末代厨娘
-The Last Cook->末代厨娘
 Oshi no Ko->我推的孩子
 Hime-sama Goumon no Jikan desu S02->公主殿下，“拷问”的时间到了
 Hime-sama Goumon no Jikan desu->公主殿下，“拷问”的时间到了
 公主大人 “拷问”的时间到了->公主殿下，“拷问”的时间到了
 Tian Dao->天道
 Demon Slayer：Kimetsu No Yaiba->鬼灭之刃
+肌肉魔法使-MASHLE 神觉者候补选拔试验篇->Mashle.Magic.and.Muscles
+肌肉魔法使-MASHLE 神覺者候補選拔試驗篇->Mashle.Magic.and.Muscles
 Bakusou Kyoudai Let's & Go WGP->四驱兄弟
 Bakusou Kyoudai Let's & Go MAX->四驱兄弟
 Peppa Pig->小猪佩奇
@@ -254,13 +250,10 @@ PJ MASKS Season 1 2015->睡衣小英雄
 P King Duckling The Mini Little Adventure->豆小鸭
 P.King.Duckling.The.Adventure.Tips->豆小鸭
 P King Duckling The Adventure Tips 2018->豆小鸭
-P King Duckling The Adventure Tips->豆小鸭
 Miniforce.Super.Dino.Power->迷你特工队之超级恐龙力量
 Miniforce Super Dino Power 2020->迷你特工队之超级恐龙力量
-Miniforce Super Dino Power->迷你特工队之超级恐龙力量
 Mini.Force->最强战士之迷你特工队
 Mini Force 2014->最强战士之迷你特工队
-Mini Force->最强战士之迷你特工队
 Meng Ji Xiao Dui->萌鸡小队
 Liang Zi Zhan Dui Zhi Kong Long Shou Hu->量子战队之恐龙守护
 Kira Kira Happy Hirake Cocotama->KiraKira Happy
@@ -299,9 +292,18 @@ Seer：Lie Kong Cang Hai 2021->赛尔号
 疯了！桂宝之三星夺宝 Crazy Guibao's Three Stars Seize Treasures->疯了！桂宝之三星夺宝
 Jurassic World->侏罗纪世界
 新猪猪侠大电影·超级赛车 GG Bond Super Racing->新猪猪侠大电影·超级赛车
+Agent Backkom：Kings Bear.2021.S01->贝肯熊2：金牌特工
+Agent Backkom：Kings Bear->贝肯熊2：金牌特工
 Agent Backkom：Kings Bear 2021 S01 2160p WEB-DL H265 AC3-PigoWeb->贝肯熊2：金牌特工
+Agent Backkom：Kings Bear 2021 S01->贝肯熊2：金牌特工
+Backkom Bear Agent 008.2017.S01->大卫贝肯之倒霉特工熊
+Backkom Bear Agent 008->大卫贝肯之倒霉特工熊
 Backkom Bear Agent 008 2017 S01 1080p WEB-DL H265 AC3-PigoWeb->大卫贝肯之倒霉特工熊
+Backkom Bear Agent 008 2017 S01->大卫贝肯之倒霉特工熊
+Monster Island.2017.S01->怪物岛
+Monster Island->怪物岛
 Monster Island 2017 S01 2160p WEB-DL H265 DDP-PigoWeb->怪物岛
+Monster Island 2017 S01->怪物岛
 Happy Little Submarine 3 Rainbow Treasure->潜艇总动员3：彩虹宝藏
 Happy Little Submarine Journey To The Center Of The Deep Ocean->潜艇总动员：海底两万里
 Geukjangpan Banjiui Bimirilgi->潘及的秘密日记 剧场版
@@ -316,3 +318,6 @@ Kureyon Shinchan Gekitotsu Rakugakingudamu to Hobo Shi-Ri no Yusha->蜡笔小新
 斗罗大陆.Soul.Land S02->Soul Land II: The Unrivaled Tang
 The.Last.Cook.2024 S01->末代厨娘
 Hime-sama.Goumon.no.Jikan.desu S02->公主殿下，“拷问”的时间到了
+Agent Backkom：Kings Bear.2021 S01->贝肯熊2：金牌特工
+Backkom Bear Agent 008.2017 S01->大卫贝肯之倒霉特工熊
+Monster Island.2017 S01->怪物岛

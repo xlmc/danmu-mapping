@@ -151,6 +151,34 @@ function convertLine(rawLine, stats, mappings, candidates) {
 // 这类目标只适合 search 场景原样使用，不适合作为 match 裸键的落点。
 const SEASON_RANGE_TARGET = /S\d{1,2}\s*-\s*S\d{1,2}/;
 
+// 资源发布尾缀标签：画质/编码/音轨/来源/制作组标注，命中即从键尾部剥除。
+// 上游识别词常把完整资源文件名作为键（如 Monster.Island.2017.S01.2160p.WEB-DL.H265.DDP-PigoWeb），
+// 而 danmu_api 的 match 会把文件名解析成 「剧名 + 年份 + 季」，并在映射表中按
+// 剧名(Sxx)/裸剧名 精确匹配。因此需要从这些键里把发布尾缀剥掉，只保留 文件名/年份/季。
+const RELEASE_SUFFIX_RES = [
+  /[\s._-]+(?:2160p|1080p|720p|480p|360p|HDR|Dolby\s*Vision|DV)(?:$|[\s._-])/gi,
+  /[\s._-]+(?:WEB-?DL|WEBRip|BluRay|BDRip|HDTV|DVDRip|REMUX|HD|FHD|UHD|4K|8K)(?:$|[\s._-])/gi,
+  /[\s._-]+(?:H\s*26[45]|HEVC|AVC|AV1|x26[45]|10bit|8bit|Hi10P|Ma10P)(?:$|[\s._-])/gi,
+  /[\s._-]+(?:DDP|DTS|AC3|AAC|FLAC|TrueHD|Atmos)(?:$|[\s._-])/gi,
+  /[\s._-]+(?:DD|5\.1|7\.1|2\.0)(?:$|[\s._-])/gi,
+  // 制作组标注：PigoWeb / HHWEB / ADWEB / IETV / AAC 等，以 大写+数字+后缀 形态出现
+  /[\s._-]+[A-Za-z0-9]*-(?:PigoWeb|HHWEB|ADWEB|IETV|WEB|TV\d*|MKV)$/gi,
+  /[\s._-]+(?:PigoWeb|HHWEB|ADWEB|IETV)$/gi,
+];
+
+function stripReleaseSuffixes(key) {
+  let cur = String(key).trim();
+  let prev = null;
+  while (prev !== cur) {
+    prev = cur;
+    for (const re of RELEASE_SUFFIX_RES) {
+      cur = cur.replace(re, ' ');
+    }
+    cur = cur.replace(/[\s._-]+$/g, '').replace(/[\s._-]{2,}/g, ' ').trim();
+  }
+  return cur;
+}
+
 function stripTrailingSeasonOrYear(key) {
   let prev = null;
   let cur = key;
@@ -165,15 +193,20 @@ function stripTrailingSeasonOrYear(key) {
 }
 
 function* keyVariants(key) {
+  // 先剥画质/编码/制作组尾缀，得到规范文件名（Monster.Island.2017.S01.2160p... → Monster.Island.2017.S01）
+  const sanitized = stripReleaseSuffixes(key);
+  if (sanitized && sanitized !== key) yield sanitized;
+
   // 剥季/年裸键：覆盖 match 解析剥离季/年后的形态
-  const bare = stripTrailingSeasonOrYear(key);
-  if (bare && bare !== key) yield bare;
+  const bare = stripTrailingSeasonOrYear(sanitized);
+  if (bare && bare !== sanitized) yield bare;
+
   // 点号→空格：danmu_api 的 match 会把文件名点号规范化为空格（3.Body.Problem → 3 Body Problem），
   // 而映射表是零归一化的全名精确匹配，点号键在 match 场景永远失配，需同时提供空格形态；
   // 点号键保留供 search 场景（用户手输完整资源名）
   if (key.includes('.')) {
     yield key.replace(/\./g, ' ');
-    if (bare && bare !== key && bare.includes('.')) yield bare.replace(/\./g, ' ');
+    if (sanitized && sanitized !== key && sanitized.includes('.')) yield sanitized.replace(/\./g, ' ');
   }
 }
 
