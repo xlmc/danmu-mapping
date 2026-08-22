@@ -1,14 +1,42 @@
 # danmu_api 剧名映射表（由 MoviePilot 共享识别词自动转换）
-# 转换日期: 2026-08-22 | 规则数: 329（原始 194 + 裸标题变体 117 + 剧名×季组合键 18）
+# 转换日期: 2026-08-22 | 规则数: 99（原始 77 + 裸标题变体 18 + 剧名×季组合键 4）
 # 用法: danmu_api 环境变量 TITLE_MAPPING_TABLE_URL 填本文件的 raw 直链
 # 键形态：完整资源名 / 裸剧名 / 裸剧名 Sxx 三类，分别覆盖手动搜索与自动匹配场景
 # 季/集修正类规则不在此文件，见 season-candidates.txt（配置到 AUTO_MATCH_MAPPING_TABLE）
 
+游乐场少女的异文化交流->与游戏中心的少女异文化交流的故事
+Yuusha.Party.wo.Tsuihou.Sareta.Shiro.Madoushi.S.Rank.Boukensha.ni.Hirowareru.Kono.Shiro.Madoushi.ga.Kikakugaisugiru.S01->被驱逐开勇者派对的白魔导师，被S级冒险者捡到 ～这个白魔导师超规格～
+定孕成婚 / Deki Chau Made Kon->定孕成婚
+宝可梦 地平线 太乐巴戈斯的光辉->宝可梦 地平线
+宝可梦 地平线 烈空坐飞升->宝可梦 地平线
+宝可梦 地平线 超级电压->宝可梦 地平线
+宝可梦 地平线 再度飞升->宝可梦 地平线
+Lycoris.Recoil.Friends.are.thieves.of.time->莉可丽丝
+Kimi to Boku no Saigo no Senjou Aruiwa Sekai ga Hajimaru Seisen->这是你与我的最后战场，或是开创世界的圣战
+S-Rank Monster no Behemoth Dakedo Neko to Machigawarete Elf Musume no Pet to Shite Kurashitemasu->S级怪兽《贝希摩斯》被误认成小猫，成为精灵女孩的骑士(宠物)一起生活
+S 級怪獸《貝希摩斯》被誤認成小貓，成為精靈女孩的騎士（寵物）一起生活->S级怪兽《贝希摩斯》被误认成小猫，成为精灵女孩的骑士(宠物)一起生活
+我獨自升級 第二季 －起於闇影－->Ore.dake.Level.Up.na.Ken
+我独自升级 第二季 －起于暗影－->Ore.dake.Level.Up.na.Ken
+我獨自升級 第二季 －起於闇影->Ore.dake.Level.Up.na.Ken
+我獨自升級 第二季->我独自升级
+Unnamed Memory Act.2->无名记忆
+Xtreme.Vanguard->超限斗神
+Soul.Land.S02->斗罗大陆Ⅱ绝世唐门
+Oshi.no.Ko->我推的孩子
+【我推的孩子】->我推的孩子
+Hime-sama.Goumon.no.Jikan.desu.S02->公主殿下，“拷问”的时间到了
+Hime-sama.Goumon.no.Jikan.desu->公主殿下，“拷问”的时间到了
+公主大人.“拷问”的时间到了->公主殿下，“拷问”的时间到了
+姫様“拷問”の時間です->公主殿下，“拷问”的时间到了
+与你同为 偶像光之美少女->你与偶像光之美少女
+名侦探偶像光之美少女->名侦探光之美少女
+公主协奏管弦乐/Princession_Orchestra/プリンセッション・オーケストラ->公主专场管弦乐
+Princession_Orchestra->公主专场管弦乐
+Mushoku Tensei III->无职转生 第三季
 魔王陛下，RETRY！R->重来吧，魔王大人！
 魔王陛下，RETRY！->重来吧，魔王大人！
 燃油车斗魂->极速车魂
 這是妳與我的最後戰場，或是開創世界的聖戰 第二季->你与我最后的战场，亦或是世界起始的圣战
-【我推的孩子】->我推的孩子
 推しの子->我推的孩子
 最強肉盾的迷宮攻略～擁有稀少技能體力 9999 的肉盾，被勇者隊伍辭退了～->最强肉盾的迷宫攻略～拥有稀少技能体力9999的肉盾，被勇者队伍辞退了～
 新人大叔冒險者，被最強隊伍操到死成無敵->大叔新人冒险者，被最强小队拼死锻炼后无敌了
@@ -40,10 +68,6 @@ Soul Land S02->Soul Land II: The Unrivaled Tang
 斗罗大陆.Soul.Land.S02->Soul Land II: The Unrivaled Tang
 HuaJiangHu.BuLiangRen.S->画江湖之不良人
 小酒館 Basue->零食八江
-宝可梦 地平线 太乐巴戈斯的光辉->宝可梦 地平线
-宝可梦 地平线 烈空坐飞升->宝可梦 地平线
-宝可梦 地平线 超级电压->宝可梦 地平线
-宝可梦 地平线 再度飞升->宝可梦 地平线
 ReMonster / Re：Monster->怪物转生
 单间，光照尚好，附带天使。 / One Room, Hiatari Futsuu, Tenshi-tsuki->单人房、日照一般、附天使
 聲優廣播的幕前幕後->声优广播的台前幕后
@@ -57,147 +81,16 @@ Thefable->杀手寓言
 Record of Lodoss War：Chronicles of the Heroic->Record of Lodoss War Chronicles of the Heroic
 Noucome->我的脑内恋碍选项
 Heaven's Lost Property Final：Eternal My Master->Heaven's Lost Property Final: Eternal My Master
-Heaven.Dragon.the.Eighth.Episode.2003->天龙八部
-My Dear King Theatre->大王别慌张
-Moving.S01->超异能族
-Happily.Ever.After.2024->婚后事
-Always.on.the.Move->南来北往
-Black Mirror 2011-2019->黑镜
-Zhi Neng Shi Dai S01 2023->智能时代 第一季
-Madame.Web->蜘蛛夫人：超感觉醒
-3.Body.Problem.2024->三体
-Reply 1988->请回答
-Suspect.2024->超意神探
-Noble.Aspirations->青云志
-Psycho.Detective.2.2019->诡探前传
-Psycho.Detective.2017->诡探
-Sherlock->神探夏洛克
-十品官吴山羊.P->十品官吴山羊
-The.Last.Cook.2024.S01->末代厨娘
-Oshi.no.Ko->我推的孩子
-Hime-sama.Goumon.no.Jikan.desu.S02->公主殿下，“拷问”的时间到了
-Hime-sama.Goumon.no.Jikan.desu->公主殿下，“拷问”的时间到了
-公主大人.“拷问”的时间到了->公主殿下，“拷问”的时间到了
-姫様“拷問”の時間です->公主殿下，“拷问”的时间到了
-与你同为 偶像光之美少女->你与偶像光之美少女
-名侦探偶像光之美少女->名侦探光之美少女
-公主协奏管弦乐/Princession_Orchestra/プリンセッション・オーケストラ->公主专场管弦乐
-Princession_Orchestra->公主专场管弦乐
-Mushoku Tensei III->无职转生 第三季
-花野井同學與戀愛病->花野井君和相思病
-为美好的世界献上祝福！3->为美好的世界献上祝福！第三季
-约会大作战 DATE A LIVE V->约会大作战
-魔王學院的不適任者～史上最強的魔王始祖，轉生就讀子孫們的學校～->魔王学院的不适任者
-魔王学院的不适任者～史上最强的魔王始祖，转生就读子孙们的学校～->魔王学院的不适任者
-黑执事 寄宿学校篇->黑执事
-為美好的世界獻上祝福！3->为美好的世界献上祝福！
-花野井同学与恋爱病->花野井君和相思病
-約會大作戰 DATE A LIVE V->约会大作战
-她來自煩星 第二季->福星小子
-黑執事 寄宿學校篇->黑执事
-Tian.Dao->天道
-Demon.Slayer：Kimetsu.No.Yaiba->鬼灭之刃
-如果 30 歲還是處男，似乎就能成為魔法師->如果30歲還是處男，似乎就能成為魔法師
-反派千金等级 99～我是隐藏头目但不是魔王～->Akuyaku Reijou Level 99: Watashi wa Ura-Boss desu ga Maou dewa Arimasen
-肌肉魔法使-MASHLE- 神觉者候补选拔试验篇->Mashle.Magic.and.Muscles
-肌肉魔法使-MASHLE- 神覺者候補選拔試驗篇->Mashle.Magic.and.Muscles
-我内心的糟糕念头 第二季->我内心的糟糕念头
-KING-OHGER->Ohsama Sentai King-Ohger
-Oregairu Kan->Yahari Ore no Seishun Lovecome wa Machigatte Iru.
-听我的电波吧->听我的电波吧 动画
-Bakusou.Kyoudai.Let's.&.Go.WGP->四驱兄弟
-Bakusou.Kyoudai.Let's.&.Go.MAX->四驱兄弟
-FLsnow->雪飘工作室
-LPSub->离谱Sub
-Haruhana->❀拨雪寻春❀
-RoxyLib->洛琪希图书馆
-Peppa.Pig->小猪佩奇
-Meitantei.Conan->名侦探柯南
-Pleasant.Goat.and.Big.Big.Wolf：Guardian.of.Sheep.Village->喜羊羊与灰太狼之羊村守护者
-Pleasant.Goat.and.Big.Big.Wolf.Ultimate.Battle.The.Next.Generation->喜羊羊与灰太狼之决战次时代
-PJ MASKS Season 3.2021->睡衣小英雄
-PJ MASKS Season 1.2015->睡衣小英雄
-P.King.Duckling.The.Mini.Little.Adventure->豆小鸭
-P.King.Duckling.The.Adventure.Tips.2018->豆小鸭
-Miniforce.Super.Dino.Power.2020->迷你特工队之超级恐龙力量
-Mini.Force.2014->最强战士之迷你特工队
-Meng.Ji.Xiao.Dui->萌鸡小队
-Magic Panda->神奇熊猫
-Liang.Zi.Zhan.Dui.Zhi.Kong.Long.Shou.Hu->量子战队之恐龙守护
-Kira.Kira.Happy.Hirake.Cocotama->KiraKira Happy
-Kira.Kira.Happy.Hirake.Cocotama.2019->KiraKira Happy
-Ju.Chong.Gong.Yuan->巨虫公园
-Kaka.Tiger.Adventure->卡卡虎大冒险
-Jin Pai Kuai Di Yuan->金牌快递员
-Inspector Black Cati->黑猫警长
-GG.Bond.Of.Dinosaurs->猪猪侠之恐龙日记
-Duobao Family->多宝一家人
-Desire.for.sky->渴望蓝天
-Da.tou.er.zi.he.xiao.tou.ba.ba->大头儿子和小头爸爸
-Da.Er.Duo.Tutu->大耳朵图图
-Big Ear Tutu->大耳朵图图
-Badanamu.Situational.English->巴塔木儿歌
-CoComelon系列儿歌->系列儿歌可可瓜儿歌
-玛莎和熊->玛莎与熊
-盖比娃娃屋->盖比的娃娃屋
-看医生,我不怕 蓝迪智慧乐园->蓝迪智慧乐园之看医生,我不怕
-鹅妈妈英文儿歌->鹅妈妈英文儿歌动物乐园
-舞法天女->舞法天女朵法拉
-羊羊运动会->喜羊羊与灰太狼之羊羊运动会
-羊羊快乐的一年->喜羊羊与灰太狼之羊羊快乐的一年
-碰碰狐儿歌之儿歌舞蹈英文版->碰碰狐儿歌之儿歌舞蹈系列英文版
-碰碰狐儿歌之3D版系列碰碰狐儿歌之3D版系列->碰碰狐儿歌之3D版系列
-爱探险的朵拉特辑->爱探险的朵拉 特别篇
-海底小纵队在中国->海底小纵队在中国：中国之旅
-棉花糖和云朵妈妈·快乐生活->棉花糖和云朵妈妈
-杰力豆爆笑畅享版->杰力豆爆笑日记
-星际炮兵团之拯救色彩->星际炮兵团之护花使者
-斗龙战士之龙印之战->斗龙战士
-托宝战士之银河侦探->托宝战士
-心奇爆龙战车X3超斗爆龙->心奇爆龙战车之暴龙出击
-工程车益智好伙伴->益智宝贝工程车
-小巴士巴斯德->Go Buster!
-奇思妙想喜羊羊->喜羊羊与灰太狼之奇思妙想喜羊羊
-奇妙启蒙课 好奇版 2-3岁->宝宝巴士奇妙启蒙课
-乐高幻影忍者->乐高幻影忍者：神龙崛起
-The Octonauts Season 6.2021->海底小纵队
-The Octonauts Season 5.2020->海底小纵队
-The Octonauts Season 4.2015->海底小纵队
-The Octonauts Season 3.2014->海底小纵队
-The Octonauts Season 2.2012->海底小纵队
-The Octonauts Season 1.2010->海底小纵队
-The Tales of Wonder Keepers->冰雪守护者
-The Intriguing Alien Guests->喜羊羊与灰太狼之奇趣外星客
-Super Train Robot.2022->列车超人
-Seer：Pi Li Jiu Chong Tian->赛尔号
-Seer：Bing Feng Yao Sai.2019->赛尔号
-Seer.2017->赛尔号
-Seer.2016->赛尔号
-Seer.2015->赛尔号
-Seer.2013->赛尔号
-Seer.2012->赛尔号
-Seer：Lie Kong Cang Hai.2021->赛尔号
-狂野地球少儿版->狂野地球
-神奇动物的一天少儿版->神奇动物的一天
-疯了！桂宝之三星夺宝.Crazy.Guibao's.Three.Stars.Seize.Treasures->疯了！桂宝之三星夺宝
-Jurassic.World->侏罗纪世界
-新猪猪侠大电影·超级赛车.GG.Bond.Super.Racing->新猪猪侠大电影·超级赛车
-New Happy Dad and Son 5 My Alien Friends->新大头儿子和小头爸爸5：我的外星朋友
-Agent Backkom：Kings Bear.2021.S01.2160p.WEB-DL.H265.AC3-PigoWeb->贝肯熊2：金牌特工
-Backkom Bear Agent 008.2017.S01.1080p.WEB-DL.H265.AC3-PigoWeb->大卫贝肯之倒霉特工熊
-Monster Island.2017.S01.2160p.WEB-DL.H265.DDP-PigoWeb->怪物岛
-Happy.Little.Submarine.3.Rainbow.Treasure->潜艇总动员3：彩虹宝藏
-Happy.Little.Submarine.Journey.To.The.Center.Of.The.Deep.Ocean->潜艇总动员：海底两万里
-Geukjangpan.Banjiui.Bimirilgi->潘及的秘密日记 剧场版
-Pororo.Movie.Treasure.Island.Adventure->波鲁鲁：金银岛历险记
-Da ErDuo Tutu Zhi Mei Shi Kuang Xiang Qu->大耳朵图图之美食狂想曲
-Pleasant.Goat.And.Big.Big.Wolf->喜羊羊与灰太狼之牛气冲天
-Let's.Go.Anpanman.Fluffy.Fuwari.and.the.Cloud.Country->面包超人：软绵绵与云之国
-Soreike.Anpanman.Dadandan.to.futago.no.hoshi->面包超人：大当当与双子星
-Soreike.Anpanman.Tobase.Kibou.no.hankachi->面包超人：跳跃吧！希望的手绢
-LetS.Go.Anpanman.Sparkle.Princess.Vanilla.of.the.Land.of.Ice.Cream->走起！面包超人闪耀！冰激凌国的香草姬
-Eiga.Kureyon.Shinchan.Bakauma.B-kyu.gurume.sabaibaru->蜡笔小新：超级美味！B级美食大逃亡
-Kureyon.Shinchan.Gekitotsu.Rakugakingudamu.to.Hobo.Shi-Ri.no.Yusha->蜡笔小新：激战！涂鸦王国和约四位勇士
+Yuusha.Party.wo.Tsuihou.Sareta.Shiro.Madoushi.S.Rank.Boukensha.ni.Hirowareru.Kono.Shiro.Madoushi.ga.Kikakugaisugiru->被驱逐开勇者派对的白魔导师，被S级冒险者捡到 ～这个白魔导师超规格～
+Yuusha Party wo Tsuihou Sareta Shiro Madoushi S Rank Boukensha ni Hirowareru Kono Shiro Madoushi ga Kikakugaisugiru S01->被驱逐开勇者派对的白魔导师，被S级冒险者捡到 ～这个白魔导师超规格～
+Lycoris Recoil Friends are thieves of time->莉可丽丝
+Unnamed Memory Act 2->无名记忆
+Xtreme Vanguard->超限斗神
+Soul.Land->斗罗大陆Ⅱ绝世唐门
+Oshi no Ko->我推的孩子
+Hime-sama Goumon no Jikan desu S02->公主殿下，“拷问”的时间到了
+Hime-sama Goumon no Jikan desu->公主殿下，“拷问”的时间到了
+公主大人 “拷问”的时间到了->公主殿下，“拷问”的时间到了
 VTuber nanda ga->VTuber.nandaga
 2 5 次元的誘惑->2.5次元的诱惑
 Tian Xing Jiu Ge->天行九歌
@@ -206,130 +99,7 @@ Soul Land->Soul Land II: The Unrivaled Tang
 斗罗大陆.Soul.Land->Soul Land II: The Unrivaled Tang
 斗罗大陆 Soul Land S02->Soul Land II: The Unrivaled Tang
 HuaJiangHu BuLiangRen S->画江湖之不良人
-Heaven.Dragon.the.Eighth.Episode->天龙八部
-Heaven Dragon the Eighth Episode 2003->天龙八部
-Moving->超异能族
-Moving S01->超异能族
-Happily.Ever.After->婚后事
-Happily Ever After 2024->婚后事
-Always on the Move->南来北往
-Black Mirror->黑镜
-Zhi Neng Shi Dai->智能时代 第一季
-Madame Web->蜘蛛夫人：超感觉醒
-3.Body.Problem->三体
-3 Body Problem 2024->三体
-Reply->请回答
-Suspect->超意神探
-Suspect 2024->超意神探
-Noble Aspirations->青云志
-Psycho.Detective.2->诡探前传
-Psycho Detective 2 2019->诡探前传
-Psycho.Detective->诡探
-Psycho Detective 2017->诡探
-十品官吴山羊 P->十品官吴山羊
-The.Last.Cook->末代厨娘
-The Last Cook 2024 S01->末代厨娘
-Oshi no Ko->我推的孩子
-Hime-sama Goumon no Jikan desu S02->公主殿下，“拷问”的时间到了
-Hime-sama Goumon no Jikan desu->公主殿下，“拷问”的时间到了
-公主大人 “拷问”的时间到了->公主殿下，“拷问”的时间到了
-Tian Dao->天道
-Demon Slayer：Kimetsu No Yaiba->鬼灭之刃
-肌肉魔法使-MASHLE 神觉者候补选拔试验篇->Mashle.Magic.and.Muscles
-肌肉魔法使-MASHLE 神覺者候補選拔試驗篇->Mashle.Magic.and.Muscles
-Bakusou Kyoudai Let's & Go WGP->四驱兄弟
-Bakusou Kyoudai Let's & Go MAX->四驱兄弟
-Peppa Pig->小猪佩奇
-Meitantei Conan->名侦探柯南
-Pleasant Goat and Big Big Wolf：Guardian of Sheep Village->喜羊羊与灰太狼之羊村守护者
-Pleasant Goat and Big Big Wolf Ultimate Battle The Next Generation->喜羊羊与灰太狼之决战次时代
-PJ MASKS Season 3->睡衣小英雄
-PJ MASKS Season 3 2021->睡衣小英雄
-PJ MASKS Season 1->睡衣小英雄
-PJ MASKS Season 1 2015->睡衣小英雄
-P King Duckling The Mini Little Adventure->豆小鸭
-P.King.Duckling.The.Adventure.Tips->豆小鸭
-P King Duckling The Adventure Tips 2018->豆小鸭
-Miniforce.Super.Dino.Power->迷你特工队之超级恐龙力量
-Miniforce Super Dino Power 2020->迷你特工队之超级恐龙力量
-Mini.Force->最强战士之迷你特工队
-Mini Force 2014->最强战士之迷你特工队
-Meng Ji Xiao Dui->萌鸡小队
-Liang Zi Zhan Dui Zhi Kong Long Shou Hu->量子战队之恐龙守护
-Kira Kira Happy Hirake Cocotama->KiraKira Happy
-Kira Kira Happy Hirake Cocotama 2019->KiraKira Happy
-Ju Chong Gong Yuan->巨虫公园
-Kaka Tiger Adventure->卡卡虎大冒险
-GG Bond Of Dinosaurs->猪猪侠之恐龙日记
-Desire for sky->渴望蓝天
-Da tou er zi he xiao tou ba ba->大头儿子和小头爸爸
-Da Er Duo Tutu->大耳朵图图
-Badanamu Situational English->巴塔木儿歌
-The Octonauts Season 6->海底小纵队
-The Octonauts Season 6 2021->海底小纵队
-The Octonauts Season 5->海底小纵队
-The Octonauts Season 5 2020->海底小纵队
-The Octonauts Season 4->海底小纵队
-The Octonauts Season 4 2015->海底小纵队
-The Octonauts Season 3->海底小纵队
-The Octonauts Season 3 2014->海底小纵队
-The Octonauts Season 2->海底小纵队
-The Octonauts Season 2 2012->海底小纵队
-The Octonauts Season 1->海底小纵队
-The Octonauts Season 1 2010->海底小纵队
-Super Train Robot->列车超人
-Super Train Robot 2022->列车超人
-Seer：Bing Feng Yao Sai->赛尔号
-Seer：Bing Feng Yao Sai 2019->赛尔号
-Seer->赛尔号
-Seer 2017->赛尔号
-Seer 2016->赛尔号
-Seer 2015->赛尔号
-Seer 2013->赛尔号
-Seer 2012->赛尔号
-Seer：Lie Kong Cang Hai->赛尔号
-Seer：Lie Kong Cang Hai 2021->赛尔号
-疯了！桂宝之三星夺宝 Crazy Guibao's Three Stars Seize Treasures->疯了！桂宝之三星夺宝
-Jurassic World->侏罗纪世界
-新猪猪侠大电影·超级赛车 GG Bond Super Racing->新猪猪侠大电影·超级赛车
-Agent Backkom：Kings Bear.2021.S01->贝肯熊2：金牌特工
-Agent Backkom：Kings Bear->贝肯熊2：金牌特工
-Agent Backkom：Kings Bear 2021 S01 2160p WEB-DL H265 AC3-PigoWeb->贝肯熊2：金牌特工
-Agent Backkom：Kings Bear 2021 S01->贝肯熊2：金牌特工
-Backkom Bear Agent 008.2017.S01->大卫贝肯之倒霉特工熊
-Backkom Bear Agent 008->大卫贝肯之倒霉特工熊
-Backkom Bear Agent 008 2017 S01 1080p WEB-DL H265 AC3-PigoWeb->大卫贝肯之倒霉特工熊
-Backkom Bear Agent 008 2017 S01->大卫贝肯之倒霉特工熊
-Monster Island.2017.S01->怪物岛
-Monster Island->怪物岛
-Monster Island 2017 S01 2160p WEB-DL H265 DDP-PigoWeb->怪物岛
-Monster Island 2017 S01->怪物岛
-Happy Little Submarine 3 Rainbow Treasure->潜艇总动员3：彩虹宝藏
-Happy Little Submarine Journey To The Center Of The Deep Ocean->潜艇总动员：海底两万里
-Geukjangpan Banjiui Bimirilgi->潘及的秘密日记 剧场版
-Pororo Movie Treasure Island Adventure->波鲁鲁：金银岛历险记
-Pleasant Goat And Big Big Wolf->喜羊羊与灰太狼之牛气冲天
-Let's Go Anpanman Fluffy Fuwari and the Cloud Country->面包超人：软绵绵与云之国
-Soreike Anpanman Dadandan to futago no hoshi->面包超人：大当当与双子星
-Soreike Anpanman Tobase Kibou no hankachi->面包超人：跳跃吧！希望的手绢
-LetS Go Anpanman Sparkle Princess Vanilla of the Land of Ice Cream->走起！面包超人闪耀！冰激凌国的香草姬
-Eiga Kureyon Shinchan Bakauma B-kyu gurume sabaibaru->蜡笔小新：超级美味！B级美食大逃亡
-Kureyon Shinchan Gekitotsu Rakugakingudamu to Hobo Shi-Ri no Yusha->蜡笔小新：激战！涂鸦王国和约四位勇士
-斗罗大陆.Soul.Land S02->Soul Land II: The Unrivaled Tang
-The.Last.Cook S01->末代厨娘
-The.Last.Cook 2024 S01->末代厨娘
-The.Last.Cook S01 2024->末代厨娘
-The.Last.Cook 2024->末代厨娘
-The Last Cook S01->末代厨娘
-The Last Cook S01 2024->末代厨娘
-The Last Cook 2024->末代厨娘
+Yuusha.Party.wo.Tsuihou.Sareta.Shiro.Madoushi.S.Rank.Boukensha.ni.Hirowareru.Kono.Shiro.Madoushi.ga.Kikakugaisugiru S01->被驱逐开勇者派对的白魔导师，被S级冒险者捡到 ～这个白魔导师超规格～
+Soul.Land S02->斗罗大陆Ⅱ绝世唐门
 Hime-sama.Goumon.no.Jikan.desu S02->公主殿下，“拷问”的时间到了
-Agent Backkom：Kings Bear S01->贝肯熊2：金牌特工
-Agent Backkom：Kings Bear S01 2021->贝肯熊2：金牌特工
-Agent Backkom：Kings Bear 2021->贝肯熊2：金牌特工
-Backkom Bear Agent 008 S01->大卫贝肯之倒霉特工熊
-Backkom Bear Agent 008 S01 2017->大卫贝肯之倒霉特工熊
-Backkom Bear Agent 008 2017->大卫贝肯之倒霉特工熊
-Monster Island S01->怪物岛
-Monster Island S01 2017->怪物岛
-Monster Island 2017->怪物岛
+斗罗大陆.Soul.Land S02->Soul Land II: The Unrivaled Tang
