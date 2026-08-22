@@ -79,6 +79,23 @@ function convertLine(rawLine, stats, mappings, candidates) {
   const rightSeason = seasonTail?.[1];
   if (seasonTail) right = right.slice(0, right.length - seasonTail[0].length).trim();
 
+  // 季/集修正形态识别：danmu_api 标题映射只认「剧名->剧名」，任何一侧携带集级信息
+  // （左含 SxxEyy 集号或小数集号尾缀；右残留 SxxEyy / Sxx Eyy / 截断的 SxxE）都说明
+  // 该规则本质是季集修正，必须转候选清单交给 AUTO_MATCH_MAPPING_TABLE 表达。
+  const leftEpisodeMark = /\bS\d{1,2}[\s._]?E\d{1,3}\b/i.test(left)
+    || /(^|[\s._-])\d{1,4}\.\d{1,2}$/.test(left);
+  const residualSeason = right.match(/\bS\d{1,2}(?:[\s._]*E\d{0,3})?\s*$/i); // E 后允许 0 位数字，覆盖截断形态（如 .S01E）
+  const isRangeTail = /S\d{1,2}\s*-\s*S\d{1,2}\s*$/i.test(right);
+  if (leftEpisodeMark || (residualSeason && !isRangeTail)) {
+    candidates.push({
+      reason: leftEpisodeMark ? '季集修正（左侧含集号/小数集号）' : '季集修正（目标残留季集标记）',
+      raw: line,
+      title: right || left,
+    });
+    stats.seasonCandidates++;
+    return;
+  }
+
   // 噪声规则黑名单：误粘贴文本/编码标签键、字幕组与编码标签目标、过短纯字母键
   if (NOISE_KEY.test(left) || NOISE_TARGET.test(right)
       || (/^[A-Za-z]+$/.test(left) && left.length < BARE_ALPHA_MIN)) {
@@ -180,8 +197,34 @@ function deriveBareKeyVariants(mappings, stats) {
   stats.bareAmbiguous = ambiguous.size;
 }
 
+// ================= 剧名+季数 组合键 =================
+// 本项目 match 流程按「解析出的剧名 + 季数」检索（TITLE_MAPPING_TABLE 命中裸剧名后，
+// 季数作为独立参数参与搜索）。带季规则除裸键外，再生成 「裸剧名 S01」 形态的组合键：
+// 同剧多季可指向不同目标而互不歧义；danmu_api 端会先试 剧名+季 组合键、再退回裸剧名。
+function deriveSeasonQualifiedKeys(mappings, stats) {
+  let added = 0, ambiguous = 0;
+  const pending = [];
+  for (const [key, target] of mappings) {
+    const m = key.match(/^(.+?)[\s._-](S\d{1,2})$/i);
+    if (!m) continue;
+    const bare = m[1].trim().replace(/[._]+$/, '');
+    if (!bare) continue;
+    for (const base of new Set([bare, bare.replace(/\./g, ' ')])) {
+      pending.push([`${base} ${m[2].toUpperCase()}`, target]);
+    }
+  }
+  for (const [ck, target] of pending) {
+    const existing = mappings.get(ck);
+    if (existing === target) continue;
+    if (existing !== undefined) { ambiguous++; continue; }
+    mappings.set(ck, target); added++;
+  }
+  stats.seasonKeys = added;
+  stats.seasonKeyAmbiguous = ambiguous;
+}
+
 async function main() {
-  const stats = { mappings: 0, seasonCandidates: 0, anchorOnly: 0, identity: 0, duplicates: 0, bareVariants: 0, bareAmbiguous: 0, noise: 0, anchorResidue: 0 };
+  const stats = { mappings: 0, seasonCandidates: 0, anchorOnly: 0, identity: 0, duplicates: 0, bareVariants: 0, bareAmbiguous: 0, seasonKeys: 0, seasonKeyAmbiguous: 0, noise: 0, anchorResidue: 0 };
   const mappings = new Map();
   const candidates = [];
 
@@ -191,11 +234,13 @@ async function main() {
   }
 
   deriveBareKeyVariants(mappings, stats);
+  deriveSeasonQualifiedKeys(mappings, stats);
 
   const header = [
     `# danmu_api 剧名映射表（由 MoviePilot 共享识别词自动转换）`,
-    `# 转换日期: ${GENERATED_AT} | 规则数: ${stats.mappings + stats.bareVariants}（原始 ${stats.mappings} + 裸标题变体 ${stats.bareVariants}）`,
+    `# 转换日期: ${GENERATED_AT} | 规则数: ${stats.mappings + stats.bareVariants + stats.seasonKeys}（原始 ${stats.mappings} + 裸标题变体 ${stats.bareVariants} + 剧名×季组合键 ${stats.seasonKeys}）`,
     `# 用法: danmu_api 环境变量 TITLE_MAPPING_TABLE_URL 填本文件的 raw 直链`,
+    `# 键形态：完整资源名 / 裸剧名 / 裸剧名 Sxx 三类，分别覆盖手动搜索与自动匹配场景`,
     `# 季/集修正类规则不在此文件，见 season-candidates.txt（配置到 AUTO_MATCH_MAPPING_TABLE）`,
   ].join('\n');
 
@@ -214,7 +259,7 @@ async function main() {
   fs.writeFileSync(path.join(OUT_DIR, '2026.txt'), mappingText);
   fs.writeFileSync(path.join(OUT_DIR, 'season-candidates.txt'), candidatesText);
 
-  console.log(`规则统计: 标题映射 ${stats.mappings} | 裸标题变体 +${stats.bareVariants}（歧义跳过 ${stats.bareAmbiguous}） | 季集候选 ${stats.seasonCandidates} | 噪声跳过 ${stats.noise} | 锚定残留跳过 ${stats.anchorResidue} | 纯锚定跳过 ${stats.anchorOnly} | 自我锚定跳过 ${stats.identity} | 重复跳过 ${stats.duplicates}`);
+  console.log(`规则统计: 标题映射 ${stats.mappings} | 裸标题变体 +${stats.bareVariants}（歧义跳过 ${stats.bareAmbiguous}） | 剧名×季组合键 +${stats.seasonKeys}（冲突跳过 ${stats.seasonKeyAmbiguous}） | 季集候选 ${stats.seasonCandidates} | 噪声跳过 ${stats.noise} | 锚定残留跳过 ${stats.anchorResidue} | 纯锚定跳过 ${stats.anchorOnly} | 自我锚定跳过 ${stats.identity} | 重复跳过 ${stats.duplicates}`);
   console.log(`输出: ${path.join(OUT_DIR, '2026.txt')} / ${path.join(OUT_DIR, 'season-candidates.txt')}`);
 }
 
