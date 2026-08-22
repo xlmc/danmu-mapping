@@ -1,22 +1,37 @@
 # danmu_api 剧名映射表（由 MoviePilot 共享识别词自动转换）
-# 转换日期: 2026-08-22 | 规则数: 322（原始 201 + 裸标题变体 121）
+# 转换日期: 2026-08-22 | 规则数: 344（原始 216 + 裸标题变体 128）
 # 用法: danmu_api 环境变量 TITLE_MAPPING_TABLE_URL 填本文件的 raw 直链
 # 季/集修正类规则不在此文件，见 season-candidates.txt（配置到 AUTO_MATCH_MAPPING_TABLE）
 
-Oshi.no.Ko->我推的孩子
-【我推的孩子】->我推的孩子
+游乐场少女的异文化交流->与游戏中心的少女异文化交流的故事
+Yuusha.Party.wo.Tsuihou.Sareta.Shiro.Madoushi.S.Rank.Boukensha.ni.Hirowareru.Kono.Shiro.Madoushi.ga.Kikakugaisugiru.S01->被驱逐开勇者派对的白魔导师，被S级冒险者捡到 ～这个白魔导师超规格～
+定孕成婚 / Deki Chau Made Kon->定孕成婚
 宝可梦 地平线 太乐巴戈斯的光辉->宝可梦 地平线
 宝可梦 地平线 烈空坐飞升->宝可梦 地平线
 宝可梦 地平线 超级电压->宝可梦 地平线
 宝可梦 地平线 再度飞升->宝可梦 地平线
-Hime-sama.Goumon.no.Jikan.desu.S02->公主殿下，“拷问”的时间到了
-Hime-sama.Goumon.no.Jikan.desu->公主殿下，“拷问”的时间到了
-公主大人.“拷问”的时间到了->公主殿下，“拷问”的时间到了
-姫様“拷問”の時間です->公主殿下，“拷问”的时间到了
+Lycoris.Recoil.Friends.are.thieves.of.time->莉可丽丝
+Kimi to Boku no Saigo no Senjou Aruiwa Sekai ga Hajimaru Seisen->这是你与我的最后战场，或是开创世界的圣战
+S-Rank Monster no Behemoth Dakedo Neko to Machigawarete Elf Musume no Pet to Shite Kurashitemasu->S级怪兽《贝希摩斯》被误认成小猫，成为精灵女孩的骑士(宠物)一起生活
+S 級怪獸《貝希摩斯》被誤認成小貓，成為精靈女孩的騎士（寵物）一起生活->S级怪兽《贝希摩斯》被误认成小猫，成为精灵女孩的骑士(宠物)一起生活
+我獨自升級 第二季 －起於闇影－->Ore.dake.Level.Up.na.Ken
+我独自升级 第二季 －起于暗影－->Ore.dake.Level.Up.na.Ken
+我獨自升級 第二季 －起於闇影->Ore.dake.Level.Up.na.Ken
+我獨自升級 第二季->我独自升级
+Unnamed Memory Act.2->无名记忆
+Xtreme.Vanguard->超限斗神
+Soul.Land.S02->斗罗大陆Ⅱ绝世唐门
+Kanojo.Okarishimasu->租借女友
+【我推的孩子】->我推的孩子
 与你同为 偶像光之美少女->你与偶像光之美少女
 名侦探偶像光之美少女->名侦探光之美少女
 公主协奏管弦乐/Princession_Orchestra/プリンセッション・オーケストラ->公主专场管弦乐
 Princession_Orchestra->公主专场管弦乐
+Oshi.no.Ko->我推的孩子
+Hime-sama.Goumon.no.Jikan.desu.S02->公主殿下，“拷问”的时间到了
+Hime-sama.Goumon.no.Jikan.desu->公主殿下，“拷问”的时间到了
+公主大人.“拷问”的时间到了->公主殿下，“拷问”的时间到了
+姫様“拷問”の時間です->公主殿下，“拷问”的时间到了
 Mushoku Tensei III->无职转生 第三季
 Heaven.Dragon.the.Eighth.Episode.2003->天龙八部
 My Dear King Theatre->大王别慌张
@@ -204,6 +219,14 @@ Soreike.Anpanman.Tobase.Kibou.no.hankachi->面包超人：跳跃吧！希望的�
 LetS.Go.Anpanman.Sparkle.Princess.Vanilla.of.the.Land.of.Ice.Cream->走起！面包超人闪耀！冰激凌国的香草姬
 Eiga.Kureyon.Shinchan.Bakauma.B-kyu.gurume.sabaibaru->蜡笔小新：超级美味！B级美食大逃亡
 Kureyon.Shinchan.Gekitotsu.Rakugakingudamu.to.Hobo.Shi-Ri.no.Yusha->蜡笔小新：激战！涂鸦王国和约四位勇士
+Yuusha.Party.wo.Tsuihou.Sareta.Shiro.Madoushi.S.Rank.Boukensha.ni.Hirowareru.Kono.Shiro.Madoushi.ga.Kikakugaisugiru->被驱逐开勇者派对的白魔导师，被S级冒险者捡到 ～这个白魔导师超规格～
+Yuusha Party wo Tsuihou Sareta Shiro Madoushi S Rank Boukensha ni Hirowareru Kono Shiro Madoushi ga Kikakugaisugiru S01->被驱逐开勇者派对的白魔导师，被S级冒险者捡到 ～这个白魔导师超规格～
+Yuusha Party wo Tsuihou Sareta Shiro Madoushi S Rank Boukensha ni Hirowareru Kono Shiro Madoushi ga Kikakugaisugiru->被驱逐开勇者派对的白魔导师，被S级冒险者捡到 ～这个白魔导师超规格～
+Lycoris Recoil Friends are thieves of time->莉可丽丝
+Unnamed Memory Act 2->无名记忆
+Xtreme Vanguard->超限斗神
+Soul.Land->斗罗大陆Ⅱ绝世唐门
+Kanojo Okarishimasu->租借女友
 Oshi no Ko->我推的孩子
 Hime-sama Goumon no Jikan desu S02->公主殿下，“拷问”的时间到了
 Hime-sama Goumon no Jikan desu->公主殿下，“拷问”的时间到了
@@ -244,7 +267,6 @@ Tian Xing Jiu Ge->天行九歌
 少年白马醉春风.The.Young.Brewmaster's.Adventure->少年白马醉春风S2
 少年白马醉春风 The Young Brewmaster's Adventure 2024 S02->少年白马醉春风S2
 少年白马醉春风 The Young Brewmaster's Adventure->少年白马醉春风S2
-Soul Land->Soul Land II: The Unrivaled Tang
 斗罗大陆.Soul.Land->Soul Land II: The Unrivaled Tang
 斗罗大陆 Soul Land S02->Soul Land II: The Unrivaled Tang
 斗罗大陆 Soul Land->Soul Land II: The Unrivaled Tang
