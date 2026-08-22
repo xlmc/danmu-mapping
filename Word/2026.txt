@@ -1,14 +1,14 @@
 # danmu_api 剧名映射表（由 MoviePilot 共享识别词自动转换）
-# 转换日期: 2026-08-22 | 规则数: 260（原始 231 + 裸标题变体 29）
+# 转换日期: 2026-08-22 | 规则数: 322（原始 201 + 裸标题变体 121）
 # 用法: danmu_api 环境变量 TITLE_MAPPING_TABLE_URL 填本文件的 raw 直链
 # 季/集修正类规则不在此文件，见 season-candidates.txt（配置到 AUTO_MATCH_MAPPING_TABLE）
 
 Oshi.no.Ko->我推的孩子
 【我推的孩子】->我推的孩子
-宝可梦 地平线 太乐巴戈斯的光辉->宝可梦 地平线(2023)
-宝可梦 地平线 烈空坐飞升->宝可梦 地平线(2023)
-宝可梦 地平线 超级电压->宝可梦 地平线(2023)
-宝可梦 地平线 再度飞升->宝可梦 地平线(2023)
+宝可梦 地平线 太乐巴戈斯的光辉->宝可梦 地平线
+宝可梦 地平线 烈空坐飞升->宝可梦 地平线
+宝可梦 地平线 超级电压->宝可梦 地平线
+宝可梦 地平线 再度飞升->宝可梦 地平线
 Hime-sama.Goumon.no.Jikan.desu.S02->公主殿下，“拷问”的时间到了
 Hime-sama.Goumon.no.Jikan.desu->公主殿下，“拷问”的时间到了
 公主大人.“拷问”的时间到了->公主殿下，“拷问”的时间到了
@@ -18,25 +18,25 @@ Hime-sama.Goumon.no.Jikan.desu->公主殿下，“拷问”的时间到了
 公主协奏管弦乐/Princession_Orchestra/プリンセッション・オーケストラ->公主专场管弦乐
 Princession_Orchestra->公主专场管弦乐
 Mushoku Tensei III->无职转生 第三季
-Heaven.Dragon.the.Eighth.Episode.2003->天龙八部 (2003)
+Heaven.Dragon.the.Eighth.Episode.2003->天龙八部
 My Dear King Theatre->大王别慌张
 Moving.S01->超异能族
 Happily.Ever.After.2024->婚后事
 Always.on.the.Move->南来北往
-Black Mirror 2011-2019->黑镜S01-S05
+Black Mirror 2011-2019->黑镜
 Zhi Neng Shi Dai S01 2023->智能时代 第一季
 Madame.Web->蜘蛛夫人：超感觉醒
-3.Body.Problem.2024->三体.2024
-Reply 1988->请回答1988
+3.Body.Problem.2024->三体
+Reply 1988->请回答
 Suspect.2024->超意神探
 Noble.Aspirations->青云志
 Psycho.Detective.2.2019->诡探前传
 Psycho.Detective.2017->诡探
 Sherlock->神探夏洛克
-十品官吴山羊.P->十品官吴山羊.E
+十品官吴山羊.P->十品官吴山羊
 The.Last.Cook.2024.S01->末代厨娘
-魔王陛下，RETRY！R->重来吧，魔王大人！ (2019)
-魔王陛下，RETRY！->重来吧，魔王大人！ (2019)
+魔王陛下，RETRY！R->重来吧，魔王大人！
+魔王陛下，RETRY！->重来吧，魔王大人！
 燃油车斗魂->极速车魂
 這是妳與我的最後戰場，或是開創世界的聖戰 第二季->你与我最后的战场，亦或是世界起始的圣战
 推しの子->我推的孩子
@@ -57,8 +57,8 @@ VTuber.nanda.ga->VTuber.nandaga
 深夜 Punch->深夜冲击
 曾經、魔法少女和邪惡相互為敵。->魔法少女与邪恶曾经敌对。
 曾经、魔法少女和邪恶相互为敌。->魔法少女与邪恶曾经敌对。
-物語系列 第外季＆第怪季->物语系列 (2009)
-物语系列 第外季＆第怪季->物语系列 (2009)
+物語系列 第外季＆第怪季->物语系列
+物语系列 第外季＆第怪季->物语系列
 Tian.Xing.Jiu.Ge->天行九歌
 ATRI -My Dear Moments->亚托莉 -我挚爱的时光-
 鹿乃子乃子乃子虎視眈眈->鹿乃子乃子虎视眈眈
@@ -67,18 +67,12 @@ ATRI -My Dear Moments->亚托莉 -我挚爱的时光-
 Kimetsu no Yaiba：Hashira Geiko-hen->鬼灭之刃
 少年白马醉春风.The.Young.Brewmaster's.Adventure.2024.S02->少年白马醉春风S2
 SPYxFAMILY CODE White->间谍过家家 代号：白
-A Record Of Mortal's Journey To Immortality->凡人修仙传(2020)
+A Record Of Mortal's Journey To Immortality->凡人修仙传
 Jade Dynasty Ⅱ->诛仙动画
 Soul Land S02->Soul Land II: The Unrivaled Tang
 斗罗大陆.Soul.Land.S02->Soul Land II: The Unrivaled Tang
-Stellar Transformation Ⅴ->Stellar Transformation
-Quan Zhi Fa Shi Ⅵ->Quan Zhi Fa Shi
-HuaJiangHu.BuLiangRen.S->画江湖之不良人.S
-Fog Hill of Five Elements Ⅱ->Fog Hill of Five Elements
-Rakshasa Street Ⅲ->Rakshasa Street
-Da Wang Rao Ming Ⅱ->Da Wang Rao Ming
-小酒館 Basue->零食八江 (2024)
-Pokemon.Best.Wishes.2010->Pokemon.1998
+HuaJiangHu.BuLiangRen.S->画江湖之不良人
+小酒館 Basue->零食八江
 ReMonster / Re：Monster->怪物转生
 单间，光照尚好，附带天使。 / One Room, Hiatari Futsuu, Tenshi-tsuki->单人房、日照一般、附天使
 聲優廣播的幕前幕後->声优广播的台前幕后
@@ -92,13 +86,8 @@ Thefable->杀手寓言
 身为魔王的我娶了奴隶精灵为妻、该如何爱她才好？->身为魔王的我娶了奴隶精灵为妻，该如何表白我的爱？
 Tensei Shitara Slime Datta Ken 3rd Season - 48.5->关于我转生变成史莱姆这档事.S00 E14
 Record of Lodoss War：Chronicles of the Heroic->Record of Lodoss War Chronicles of the Heroic
-Noucome->我的脑内恋碍选项 (2013)
-Heaven's Lost Property Final：Eternal My Master->Heaven's Lost Property Final: Eternal My Master (2014)
-Hi10p_1080p->1080p x264
-Ma10p_1080p->1080p x265
-HEVC Main10P->x265
-chs&jpn->jpsc
-cht&jpn->jptc
+Noucome->我的脑内恋碍选项
+Heaven's Lost Property Final：Eternal My Master->Heaven's Lost Property Final: Eternal My Master
 花野井同學與戀愛病->花野井君和相思病
 为美好的世界献上祝福！3->为美好的世界献上祝福！第三季
 约会大作战 DATE A LIVE V->约会大作战
@@ -110,42 +99,23 @@ cht&jpn->jptc
 約會大作戰 DATE A LIVE V->约会大作战
 她來自煩星 第二季->福星小子
 黑執事 寄宿學校篇->黑执事
-Tian.Dao->天道 (2008)
+Tian.Dao->天道
 Demon.Slayer：Kimetsu.No.Yaiba->鬼灭之刃
-bad character range at position->欢迎来到实力至上主义的教室
 如果 30 歲還是處男，似乎就能成為魔法師->如果30歲還是處男，似乎就能成為魔法師
 反派千金等级 99～我是隐藏头目但不是魔王～->Akuyaku Reijou Level 99: Watashi wa Ura-Boss desu ga Maou dewa Arimasen
-肌肉魔法使-MASHLE- 神觉者候补选拔试验篇->Mashle.Magic.and.Muscles.2024
-肌肉魔法使-MASHLE- 神覺者候補選拔試驗篇->Mashle.Magic.and.Muscles.2024
+肌肉魔法使-MASHLE- 神觉者候补选拔试验篇->Mashle.Magic.and.Muscles
+肌肉魔法使-MASHLE- 神覺者候補選拔試驗篇->Mashle.Magic.and.Muscles
 我内心的糟糕念头 第二季->我内心的糟糕念头
 KING-OHGER->Ohsama Sentai King-Ohger
-Kobayashi-san Chi no Maid Dragon S S->Kobayashi-san Chi no Maid Dragon
-Yahari Ore no Seishun Lovecome wa Machigatte Iru. Zoku->Yahari Ore no Seishun Lovecome wa Machigatte Iru.
 Oregairu Kan->Yahari Ore no Seishun Lovecome wa Machigatte Iru.
 Bungou Stray Dogs S00E01->Bungou Stray Dogs S01E25
 听我的电波吧->听我的电波吧 动画
-OVERLORD II->OVERLORD
-OVERLORD III->OVERLORD
-OVERLORD Ⅳ->OVERLORD
 Bakusou.Kyoudai.Let's.&.Go.WGP->四驱兄弟
 Bakusou.Kyoudai.Let's.&.Go.MAX->四驱兄弟
-KitaujiSub->北宇治字幕组
-【枫叶字幕组】->[枫叶字幕组]
-BeanSub->豌豆字幕组
-DMG->动漫国字幕组
-UHA-WINGS->悠哈璃羽字幕社
-YUI-7->西农YUI汉化组
-XKsub->星空字幕组
 FLsnow->雪飘工作室
 LPSub->离谱Sub
-LKSUB->轻之国度字幕组
 Haruhana->❀拨雪寻春❀
 RoxyLib->洛琪希图书馆
-JPSC&JPTC->简繁日内封
-康复重症->康复重症监护室字幕组
-DHR&MakariHoshiyume->DHR动研字幕组&茉语星梦
-MSRSub&Todokoi->野生菌字幕组&届恋字幕组
-SRTx1->简体内封
 Peppa.Pig->小猪佩奇
 Meitantei.Conan->名侦探柯南
 Pleasant.Goat.and.Big.Big.Wolf：Guardian.of.Sheep.Village->喜羊羊与灰太狼之羊村守护者
@@ -234,32 +204,124 @@ Soreike.Anpanman.Tobase.Kibou.no.hankachi->面包超人：跳跃吧！希望的�
 LetS.Go.Anpanman.Sparkle.Princess.Vanilla.of.the.Land.of.Ice.Cream->走起！面包超人闪耀！冰激凌国的香草姬
 Eiga.Kureyon.Shinchan.Bakauma.B-kyu.gurume.sabaibaru->蜡笔小新：超级美味！B级美食大逃亡
 Kureyon.Shinchan.Gekitotsu.Rakugakingudamu.to.Hobo.Shi-Ri.no.Yusha->蜡笔小新：激战！涂鸦王国和约四位勇士
-Heaven.Dragon.the.Eighth.Episode->天龙八部 (2003)
+Oshi no Ko->我推的孩子
+Hime-sama Goumon no Jikan desu S02->公主殿下，“拷问”的时间到了
+Hime-sama Goumon no Jikan desu->公主殿下，“拷问”的时间到了
+公主大人 “拷问”的时间到了->公主殿下，“拷问”的时间到了
+Heaven.Dragon.the.Eighth.Episode->天龙八部
+Heaven Dragon the Eighth Episode 2003->天龙八部
+Heaven Dragon the Eighth Episode->天龙八部
 Moving->超异能族
+Moving S01->超异能族
 Happily.Ever.After->婚后事
+Happily Ever After 2024->婚后事
+Happily Ever After->婚后事
+Always on the Move->南来北往
+Black Mirror->黑镜
 Zhi Neng Shi Dai->智能时代 第一季
-3.Body.Problem->三体.2024
-Reply->请回答1988
+Madame Web->蜘蛛夫人：超感觉醒
+3.Body.Problem->三体
+3 Body Problem 2024->三体
+3 Body Problem->三体
+Reply->请回答
 Suspect->超意神探
+Suspect 2024->超意神探
+Noble Aspirations->青云志
 Psycho.Detective.2->诡探前传
+Psycho Detective 2 2019->诡探前传
+Psycho Detective 2->诡探前传
 Psycho.Detective->诡探
+Psycho Detective 2017->诡探
+Psycho Detective->诡探
+十品官吴山羊 P->十品官吴山羊
 The.Last.Cook->末代厨娘
+The Last Cook 2024 S01->末代厨娘
+The Last Cook->末代厨娘
+VTuber nanda ga->VTuber.nandaga
+尼爾：自動人形 Ver1 1a -->尼尔：自动人形 (2023).S01E
+2 5 次元的誘惑->2.5次元的诱惑
+Tian Xing Jiu Ge->天行九歌
 少年白马醉春风.The.Young.Brewmaster's.Adventure->少年白马醉春风S2
+少年白马醉春风 The Young Brewmaster's Adventure 2024 S02->少年白马醉春风S2
+少年白马醉春风 The Young Brewmaster's Adventure->少年白马醉春风S2
 Soul Land->Soul Land II: The Unrivaled Tang
 斗罗大陆.Soul.Land->Soul Land II: The Unrivaled Tang
-Pokemon.Best.Wishes->Pokemon.1998
+斗罗大陆 Soul Land S02->Soul Land II: The Unrivaled Tang
+斗罗大陆 Soul Land->Soul Land II: The Unrivaled Tang
+HuaJiangHu BuLiangRen S->画江湖之不良人
+Tensei Shitara Slime Datta Ken 3rd Season - 48 5->关于我转生变成史莱姆这档事.S00 E14
+Tian Dao->天道
+Demon Slayer：Kimetsu No Yaiba->鬼灭之刃
+Bakusou Kyoudai Let's & Go WGP->四驱兄弟
+Bakusou Kyoudai Let's & Go MAX->四驱兄弟
+Peppa Pig->小猪佩奇
+Meitantei Conan->名侦探柯南
+Pleasant Goat and Big Big Wolf：Guardian of Sheep Village->喜羊羊与灰太狼之羊村守护者
+Pleasant Goat and Big Big Wolf Ultimate Battle The Next Generation->喜羊羊与灰太狼之决战次时代
 PJ MASKS Season 3->睡衣小英雄
+PJ MASKS Season 3 2021->睡衣小英雄
 PJ MASKS Season 1->睡衣小英雄
+PJ MASKS Season 1 2015->睡衣小英雄
+P King Duckling The Mini Little Adventure->豆小鸭
 P.King.Duckling.The.Adventure.Tips->豆小鸭
+P King Duckling The Adventure Tips 2018->豆小鸭
+P King Duckling The Adventure Tips->豆小鸭
 Miniforce.Super.Dino.Power->迷你特工队之超级恐龙力量
+Miniforce Super Dino Power 2020->迷你特工队之超级恐龙力量
+Miniforce Super Dino Power->迷你特工队之超级恐龙力量
 Mini.Force->最强战士之迷你特工队
+Mini Force 2014->最强战士之迷你特工队
+Mini Force->最强战士之迷你特工队
+Meng Ji Xiao Dui->萌鸡小队
+Liang Zi Zhan Dui Zhi Kong Long Shou Hu->量子战队之恐龙守护
+Kira Kira Happy Hirake Cocotama->KiraKira Happy
+Kira Kira Happy Hirake Cocotama 2019->KiraKira Happy
+Ju Chong Gong Yuan->巨虫公园
+Kaka Tiger Adventure->卡卡虎大冒险
+GG Bond Of Dinosaurs->猪猪侠之恐龙日记
+Desire for sky->渴望蓝天
+Da tou er zi he xiao tou ba ba->大头儿子和小头爸爸
+Da Er Duo Tutu->大耳朵图图
+Badanamu Situational English->巴塔木儿歌
 The Octonauts Season 6->海底小纵队
+The Octonauts Season 6 2021->海底小纵队
 The Octonauts Season 5->海底小纵队
+The Octonauts Season 5 2020->海底小纵队
 The Octonauts Season 4->海底小纵队
+The Octonauts Season 4 2015->海底小纵队
 The Octonauts Season 3->海底小纵队
+The Octonauts Season 3 2014->海底小纵队
 The Octonauts Season 2->海底小纵队
+The Octonauts Season 2 2012->海底小纵队
 The Octonauts Season 1->海底小纵队
+The Octonauts Season 1 2010->海底小纵队
 Super Train Robot->列车超人
+Super Train Robot 2022->列车超人
 Seer：Bing Feng Yao Sai->赛尔号
+Seer：Bing Feng Yao Sai 2019->赛尔号
 Seer->赛尔号
+Seer 2017->赛尔号
+Seer 2016->赛尔号
+Seer 2015->赛尔号
+Seer 2013->赛尔号
+Seer 2012->赛尔号
 Seer：Lie Kong Cang Hai->赛尔号
+Seer：Lie Kong Cang Hai 2021->赛尔号
+疯了！桂宝之三星夺宝 Crazy Guibao's Three Stars Seize Treasures->疯了！桂宝之三星夺宝
+Jurassic World->侏罗纪世界
+新猪猪侠大电影·超级赛车 GG Bond Super Racing->新猪猪侠大电影·超级赛车
+疯狂小世界 S01E01->疯狂小世界
+Agent Backkom：Kings Bear 2021 S01 2160p WEB-DL H265 AC3-PigoWeb->贝肯熊2：金牌特工
+Backkom Bear Agent 008 2017 S01 1080p WEB-DL H265 AC3-PigoWeb->大卫贝肯之倒霉特工熊
+Monster Island 2017 S01 2160p WEB-DL H265 DDP-PigoWeb->怪物岛
+Happy Little Submarine 3 Rainbow Treasure->潜艇总动员3：彩虹宝藏
+Happy Little Submarine Journey To The Center Of The Deep Ocean->潜艇总动员：海底两万里
+Geukjangpan Banjiui Bimirilgi->潘及的秘密日记 剧场版
+Pororo Movie Treasure Island Adventure->波鲁鲁：金银岛历险记
+Pleasant Goat And Big Big Wolf->喜羊羊与灰太狼之牛气冲天
+Let's Go Anpanman Fluffy Fuwari and the Cloud Country->面包超人：软绵绵与云之国
+Soreike Anpanman Dadandan to futago no hoshi->面包超人：大当当与双子星
+Soreike Anpanman Tobase Kibou no hankachi->面包超人：跳跃吧！希望的手绢
+LetS Go Anpanman Sparkle Princess Vanilla of the Land of Ice Cream->走起！面包超人闪耀！冰激凌国的香草姬
+Eiga Kureyon Shinchan Bakauma B-kyu gurume sabaibaru->蜡笔小新：超级美味！B级美食大逃亡
+Kureyon Shinchan Gekitotsu Rakugakingudamu to Hobo Shi-Ri no Yusha->蜡笔小新：激战！涂鸦王国和约四位勇士

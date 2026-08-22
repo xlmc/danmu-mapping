@@ -1,5 +1,5 @@
 # 季/集修正规则候选（自动提取，需人工核对后使用）
-# 生成日期: 2026-08-22 | 共 322 条
+# 生成日期: 2026-08-22 | 共 250 条
 # 使用方式: 按官方 AUTO_MATCH_MAPPING_TABLE 语法改写后配置到本地环境变量，
 #           语法: 剧名 S源季E源集 -> 剧名 S目标季E目标集（集数范围用 ~，如 E01~E12）
 # 以下按原因分组，== 原始规则 == 后附提取出的目标标题/季数/偏移信息
@@ -8,8 +8,6 @@
 #   → 目标: [猎户手抄部]
 # [正则条件（左侧含正则语法）] \[Strange-Raw\].*\/ => [Strange-Raw]
 #   → 目标: [Strange-Raw]
-# [正则条件（左侧含正则语法）] \[桜都字幕组\].*\/ => [桜都字幕组]
-#   → 目标: [桜都字幕组]
 # [正则条件（左侧含正则语法）] \[ANi\].*\/ => [ANi]
 #   → 目标: [ANi]
 # [正则条件（左侧含正则语法）] \[雪飘工作室\].*\/ => [雪飘工作室]
@@ -43,17 +41,15 @@
 # [正则条件（左侧含正则语法）] (?<=LoliHouse.*?) Kingdom S6 => 王者天下.S06 {[tmdbid=46437;type=tv;]}
 #   → 目标: 王者天下
 # [正则条件（左侧含正则语法）] The.Hunter.S01(?=.*(?:2024)) => 猎冰.The.Hunter.2024.S01
-#   → 目标: 猎冰.The.Hunter.2024
+#   → 目标: 猎冰.The.Hunter
 # [季数错位 S03→S01] 仙剑奇侠传三.Chinese.Paladin.3.S03 => 仙剑奇侠传三.Chinese.Paladin.3.S01
 #   → 目标: 仙剑奇侠传三.Chinese.Paladin.3
 # [正则条件（左侧含正则语法）] Singer.*(S09|S05) => 歌手2024.S01
-#   → 目标: 歌手2024
+#   → 目标: 歌手
 # [季数错位 S08→S12] Keep.Running.S08 => 奔跑吧！兄弟.S12
 #   → 目标: 奔跑吧！兄弟
 # [正则条件（左侧含正则语法）] Race.S01(?=.*HHWEB) => 较量人生 S01
 #   → 目标: 较量人生
-# [正则条件（左侧含正则语法）] Fabulous Beasts S01(?=.*E(2[5-9]|3[0-4]).*ADWeb) => Fabulous Beasts S03 && S03 <> 2023 >> EP-24
-#   → 目标: Fabulous Beasts
 # [正则条件（左侧含正则语法）] \[唐朝诡事录之西行\].Strange.Tales.of.Tang.Dynasty.II.To.the.West(?=.*QHstudIo) => 唐朝诡事录
 #   → 目标: 唐朝诡事录
 # [正则条件（左侧含正则语法）] \[白夜破晓\].Day.and.Night => 白夜追凶
@@ -68,8 +64,6 @@
 #   → 目标: 转生贵族靠着鉴定技能一飞冲天 S01E\1
 # [正则条件（左侧含正则语法）] 转生贵族凭鉴定技能扭转人生 第二季 - (1[3-9]|2[0-9]) => 转生贵族靠着鉴定技能一飞冲天 S01E\1
 #   → 目标: 转生贵族靠着鉴定技能一飞冲天 S01E\1
-# [正则条件（左侧含正则语法）] Re.Zero.kara.Hajimeru.Isekai.Seikatsu.S03(?=.*ADWeb) => Re.Zero.kara.Hajimeru.Isekai.Seikatsu.S01 && S01 <> 2024 >> EP+50
-#   → 目标: Re.Zero.kara.Hajimeru.Isekai.Seikatsu
 # [正则条件（左侧含正则语法）] (?<=ANi.*?)Re：從零開始的異世界生活 第三季 => Re.Zero.kara.Hajimeru.Isekai.Seikatsu.S01 && S01 <> 1080P >> EP+50
 #   → 目标: Re.Zero.kara.Hajimeru.Isekai.Seikatsu
 # [正则条件（左侧含正则语法）] (?<=ANi.*?)Re：从零开始的异世界生活 第三季 => Re.Zero.kara.Hajimeru.Isekai.Seikatsu.S01 && S01 <> 1080P >> EP+50
@@ -84,40 +78,34 @@
 #   → 目标: 死神 千年血战篇
 # [正则条件（左侧含正则语法）] (?<=ANi.*?)BLEACH 死神 千年血戰篇-相剋譚- => 死神 千年血战篇 {[tmdbid=30984;type=tv;s=2]}
 #   → 目标: 死神 千年血战篇
-# [正则条件（左侧含正则语法）] (?i)BLEACH.Sennen.Kessen.hen.S01(?=.*ADWeb) => BLEACH.Sennen.Kessen.hen.S02 {[tmdbid=30984;type=tv;s=2]}
-#   → 目标: BLEACH.Sennen.Kessen.hen
 # [正则条件（左侧含正则语法）] (?i)BLEACH.Sennen.Kessenhen.S01(?=.*ADWeb) => BLEACH.Sennen.Kessen.hen.S02 {[tmdbid=30984;type=tv;s=2]}
 #   → 目标: BLEACH.Sennen.Kessen.hen
 # [集数偏移 +12] MF Ghost S02E => MF Ghost.S01E  && .S01E <>  2024 >> EP+12
 #   → 目标: MF Ghost.S01E
-# [正则条件（左侧含正则语法）] ShangriLa.Frontier.S02(?=.*ADWeb) => ShangriLa.Frontier.S01 && S01 <> 2024 >> EP+25
-#   → 目标: ShangriLa.Frontier
 # [正则条件（左侧含正则语法）] (?<=ANi.*?)香格里拉・开拓异境～粪作猎手挑战神作～ 第二季 => ShangriLa.Frontier.S01 && S01 <> 1080P >> EP+25
 #   → 目标: ShangriLa.Frontier
 # [正则条件（左侧含正则语法）] (?<=ANi.*?)香格里拉・開拓異境～糞作獵手挑戰神作～ 第二季 => ShangriLa.Frontier.S01 && S01 <> 1080P >> EP+25
 #   → 目标: ShangriLa.Frontier
 # [正则条件（左侧含正则语法）] (?<=Fox.Spirit.Matchmaker.*?)2024 => 2015 && S01 <> 2160p >> EP+157
-#   → 目标: 2015
+#   → 目标: (?<=Fox.Spirit.Matchmaker.*?)2024
 # [正则条件（左侧含正则语法）] (?<=Fox.Spirit.Matchmaker.*?)S12E(?=.*ADWeb) => S01E && S01E  <> 2024 >> EP+157
 #   → 目标: S01E
 # [正则条件（左侧含正则语法）] (?<=Fox.Spirit.Matchmaker.*?)2024(?=.*ADWeb) => 2015
-#   → 目标: 2015
+#   → 目标: (?<=Fox.Spirit.Matchmaker.*?)2024(?=.*ADWeb)
 # [正则条件（左侧含正则语法）] (?<=Fox.Spirit.Matchmaker.*?)2024(?=.*PTerWEB) =>  2015 && S01 <> 2160p >> EP+157
-#   → 目标: 2015
+#   → 目标: (?<=Fox.Spirit.Matchmaker.*?)2024(?=.*PTerWEB)
 # [正则条件（左侧含正则语法）] (?<=Fox.Spirit.Matchmaker.*?)2024(?=.*PTerWEB) =>  2015 && S01 <> 1080p >> EP+157
-#   → 目标: 2015
+#   → 目标: (?<=Fox.Spirit.Matchmaker.*?)2024(?=.*PTerWEB)
 # [正则条件（左侧含正则语法）] (雀魂 KANG!! / Jantama Kan!!)|(Jantama Kan!!) => 雀魂 S02
 #   → 目标: 雀魂
 # [正则条件（左侧含正则语法）] 神墓.Tomb.of.Fallen.Gods.S01E(1[7-9]|[3-9][0-9])(?=.*HHWEB) => 神墓.S02E\1 && S02 <> 2022 >> EP-16
 #   → 目标: 神墓.S02E\1
 # [正则条件（左侧含正则语法）] (?:神墓\.)?Tomb.of.Fallen.Gods.S02E(1[7-9]|[2-9][0-9])(?=.*ADWeb) => 神墓.S02E\1 && S02 <> 2024 >> EP-16
 #   → 目标: 神墓.S02E\1
-# [正则条件（左侧含正则语法）] IMMORTALITY.S01(?=.*E(4[1-9]|5[0-6]).*ADWeb) => IMMORTALITY.S04 && S04 <> 2022 >> EP-40
-#   → 目标: IMMORTALITY
 # [正则条件（左侧含正则语法）] \[凡人修仙传 星海飞驰\]\[Fan Ren Xiu Xian Zhuan\]\[2023\] => 凡人修仙传.2020 && 2020 <> AVC >> EP+76
-#   → 目标: 凡人修仙传.2020
+#   → 目标: 凡人修仙传
 # [正则条件（左侧含正则语法）] (?:诛仙\.)?Jade.Dynasty.S01E(2[7-9]|[3-9][0-9]).2024.*ADWeb => 诛仙.S02E\1.2022 && S02 <> 2022 >> EP-26
-#   → 目标: 诛仙.S02E\1.2022
+#   → 目标: 诛仙.S02E\1
 # [正则条件（左侧含正则语法）] Jade.Dynasty.S01(?=.*ADWeb) => 诛仙动画.S02 && S02 <> 2024 >> EP-26
 #   → 目标: 诛仙动画
 # [正则条件（左侧含正则语法）] Jade.Dynasty.S01(?=.*HHWEB) => 诛仙.Jade.Dynasty.S02 && S02 <> 2022 >> EP-26
@@ -137,47 +125,23 @@
 # [集数偏移 +13] 师兄啊师兄.My.Senior.Brother.is.Too.Steady.S02E => 师兄啊师兄.My.Senior.Brother.is.Too.Steady.S01E && S01 <> 2023 >> EP+13
 #   → 目标: 师兄啊师兄.My.Senior.Brother.is.Too.Steady.S01E
 # [正则条件（左侧含正则语法）] (?<=Swallowed.Star.S05.*?)2024 => 2020
-#   → 目标: 2020
+#   → 目标: (?<=Swallowed.Star.S05.*?)2024
 # [正则条件（左侧含正则语法）] (?<=Swallowed.Star.S04.*?)2023 => 2020
-#   → 目标: 2020
+#   → 目标: (?<=Swallowed.Star.S04.*?)2023
 # [正则条件（左侧含正则语法）] (?<=Swallowed.Star.S03.*?)2022 => 2020
-#   → 目标: 2020
+#   → 目标: (?<=Swallowed.Star.S03.*?)2022
 # [正则条件（左侧含正则语法）] (?<=Swallowed.Star.S02.*?)2021 => 2020
-#   → 目标: 2020
-# [正则条件（左侧含正则语法）] Swallowed.Star.S05(?=.*ADWeb) => Swallowed.Star.S01
-#   → 目标: Swallowed.Star
-# [集数偏移 +85] Swallowed.Star.S04 => Swallowed.Star.S01 && S01 <> 2020 >> EP+85
-#   → 目标: Swallowed.Star
-# [季数错位 S03→S01] Swallowed.Star.S03 => Swallowed.Star.S01
-#   → 目标: Swallowed.Star
-# [季数错位 S02→S01] Swallowed.Star.S02 => Swallowed.Star.S01
-#   → 目标: Swallowed.Star
-# [季数错位 S02→S01] 吞噬星空·第2季.Swallowed.Star.S02 => Swallowed.Star.S01
-#   → 目标: Swallowed.Star
-# [季数错位 S03→S01] 吞噬星空.第3季.Swallowed.Star.S03 => Swallowed.Star.S01
-#   → 目标: Swallowed.Star
-# [集数偏移 +85] 吞噬星空.Swallowed.Star.S04 => Swallowed.Star.S01 && S01 <> 2023 >> EP+85
-#   → 目标: Swallowed.Star
-# [正则条件（左侧含正则语法）] Swallowed.Star.2023.S04(?=.*PTerWEB) => Swallowed.Star.S01 && S01 <> WEB-DL >> EP+85
-#   → 目标: Swallowed.Star
+#   → 目标: (?<=Swallowed.Star.S02.*?)2021
 # [正则条件（左侧含正则语法）] Swallowed Star 2025 S06(?=.*AilMWeb) => Swallowed.Star.S01
 #   → 目标: Swallowed.Star
 # [正则条件（左侧含正则语法）] Swallowed Star 2021 E167(?=.*OurTV) => Swallowed.Star.S01
 #   → 目标: Swallowed.Star
 # [正则条件（左侧含正则语法）] (?<=Apotheosis.S02.*?)2023 => 2022
-#   → 目标: 2022
-# [集数偏移 +52] Apotheosis.S02 => Apotheosis.S01 && S01 <> 2022 >> EP+52
-#   → 目标: Apotheosis
-# [正则条件（左侧含正则语法）] IMMORTALITY.S01(?=.*ADWeb) => IMMORTALITY.S03 && S03 <> 2022 >> EP-24
-#   → 目标: IMMORTALITY
+#   → 目标: (?<=Apotheosis.S02.*?)2023
 # [正则条件（左侧含正则语法）] New Doraemon 哆啦A梦新番\[(\d+)\] => 哆啦A梦(2005)- S01E\1
 #   → 目标: 哆啦A梦(2005)- S01E\1
 # [正则条件（左侧含正则语法）] (?<=SBSUB.*DR.*?)- => part
 #   → 目标: part
-# [正则条件（左侧含正则语法）] \[SBSUB\]\[CONAN\]\[DR => [银色子弹字幕组][名侦探柯南][S01E
-#   → 目标: [银色子弹字幕组][名侦探柯南][S01E
-# [正则条件（左侧含正则语法）] \[SBSUB\]\[CONAN\]\[ => [银色子弹字幕组][名侦探柯南][S01E
-#   → 目标: [银色子弹字幕组][名侦探柯南][S01E
 # [正则条件（左侧含正则语法）] \[APTX4869\]\[CONAN\]\[ => [APTX4869][名侦探柯南][S01E
 #   → 目标: [APTX4869][名侦探柯南][S01E
 # [正则条件（左侧含正则语法）] \[APTX4869&CONANS\]\[CONAN\]\[ => [APTX4869][名侦探柯南][S01E
@@ -344,20 +308,12 @@
 #   → 目标: 龙珠改.S05E\1
 # [正则条件（左侧含正则语法）] 【CXRAW】【ドラゴンボール改】【(13[4-9]|14\d|15[0-9])】【.*】 => 龙珠改.S06E\1 && 龙珠改.S06 <> .* >> EP-133
 #   → 目标: 龙珠改.S06E\1
-# [正则条件（左侧含正则语法）] \[猪猪字幕组\]\[火影忍者-NARUTO -ナルト\]\[(00[1-9]|0[1-4][0-9]|05[0-2])\]\[DVD 720x544\] => [猪猪字幕组][火影忍者-NARUTO -ナルト][\1][DVD 720x544]{[tmdbid=46260;type=tv;s=1]}
-#   → 目标: [猪猪字幕组][火影忍者-NARUTO -ナルト][\1][DVD 720x544]
-# [正则条件（左侧含正则语法）] \[猪猪字幕组\]\[火影忍者-NARUTO -ナルト\]\[(05[3-9]|0[6-9][0-9]|10[0-4])\]\[DVD 720x544\] => [猪猪字幕组][火影忍者-NARUTO -ナルト][\1][DVD 720x544]{[tmdbid=46260;type=tv;s=2]}
-#   → 目标: [猪猪字幕组][火影忍者-NARUTO -ナルト][\1][DVD 720x544]
-# [正则条件（左侧含正则语法）] \[猪猪字幕组\]\[火影忍者-NARUTO -ナルト\]\[(10[5-9]|1[1-4][0-9]|15[0-8])\]\[DVD 720x544\] => [猪猪字幕组][火影忍者-NARUTO -ナルト][\1][DVD 720x544]{[tmdbid=46260;type=tv;s=3]}
-#   → 目标: [猪猪字幕组][火影忍者-NARUTO -ナルト][\1][DVD 720x544]
-# [正则条件（左侧含正则语法）] \[猪猪字幕组\]\[火影忍者-NARUTO -ナルト\]\[(15[9-9]|1[6-9][0-9]|20[0-9]|220)\]\[DVD 720x544\] => [猪猪字幕组][火影忍者-NARUTO -ナルト][\1][DVD 720x544]{[tmdbid=46260;type=tv;s=4]}
-#   → 目标: [猪猪字幕组][火影忍者-NARUTO -ナルト][\1][DVD 720x544]
 # [正则条件（左侧含正则语法）] (?<=Yuru Camp S03.*?)2024 => 2018
-#   → 目标: 2018
+#   → 目标: (?<=Yuru Camp S03.*?)2024
 # [正则条件（左侧含正则语法）] 轻旅轻营 \(摇曳露营\) Season 3 / Yuru Camp Season 3 => 摇曳露营△ Season 3
 #   → 目标: 摇曳露营△ Season 3
 # [集数偏移 -134] 我的英雄學院 第七季 => 我的英雄学院 S07 E && E <> 1080P >> EP-134
-#   → 目标: 我的英雄学院 S07 E
+#   → 目标: 我的英雄学院 S07
 # [正则条件（左侧含正则语法）] 终末列车去往何方\?\/ 末班列车去哪里\?\/ Shuumatsu Train Doko e Iku => 终末列车要开往哪里？
 #   → 目标: 终末列车要开往哪里？
 # [正则条件（左侧含正则语法）] Tensei Shitara Slime Datta Ken 3rd Season - 00\(48.5\) => 关于我转生变成史莱姆这档事.S00 E14 {[tmdbid=82684;type=tv;s=0;e=14]}
@@ -380,14 +336,10 @@
 #   → 目标: 王者天下
 # [正则条件（左侧含正则语法）] \[ANi\].*\/ => [ANi]
 #   → 目标: [ANi]
-# [正则条件（左侧含正则语法）] (?i)\bSBSUB\b => 银色子弹字幕组
-#   → 目标: 银色子弹字幕组
 # [正则条件（左侧含正则语法）] (?i)\bNekomoe kisstan\b => 喵萌奶茶屋
 #   → 目标: 喵萌奶茶屋
 # [正则条件（左侧含正则语法）] (?i)\bOPFansMaplesnow\b => OPFans枫雪动漫
 #   → 目标: OPFans枫雪动漫
-# [正则条件（左侧含正则语法）] (?i)\bSakurato\b|樱都字幕组|桜都字幕组|桜都 => 桜都字幕组
-#   → 目标: 桜都字幕组
 # [正则条件（左侧含正则语法）] (?i)\bHaruhana\b => ❀拨雪寻春❀
 #   → 目标: ❀拨雪寻春❀
 # [正则条件（左侧含正则语法）] (?<=[\W_])CR(?=[\W_]) => Crunchyroll
@@ -434,16 +386,10 @@
 #   → 目标: [Bleach Sennen Kessen.S02]
 # [正则条件（左侧含正则语法）] 夢想成為魔法少女 \[年齡限制版\]  => 憧憬成为魔法少女
 #   → 目标: 憧憬成为魔法少女
-# [集数偏移 +12] Mashle.Magic.and.Muscles.2024.S02 => Mashle.Magic.and.Muscles.2024.S01 && S01 <> 1080p >> EP+12
-#   → 目标: Mashle.Magic.and.Muscles.2024
 # [集数偏移 +12] Mashle.Magic.and.Muscles.2024.S02 => 物理魔法使马修 2023 S01 && S01 <> 1080p >> EP+12
-#   → 目标: 物理魔法使马修 2023
+#   → 目标: 物理魔法使马修
 # [正则条件（左侧含正则语法）] 肌肉魔法使\-MASHLE\- 神觉者候补选拔试验篇 \/ Mashle Season 2 \- .. => Mashle.Magic.and.Muscles.S01
 #   → 目标: Mashle.Magic.and.Muscles
-# [正则条件（左侧含正则语法）] Honzuki no Gekokujou S2 \[\d{2} => Honzuki no Gekokujou S01
-#   → 目标: Honzuki no Gekokujou
-# [正则条件（左侧含正则语法）] Honzuki no Gekokujou S3 \[\d{2} => Honzuki no Gekokujou S01
-#   → 目标: Honzuki no Gekokujou
 # [正则条件（左侧含正则语法）] Kobayashi-san Chi no Maid Dragon \[14\] => Kobayashi-san Chi no Maid Dragon S00E08
 #   → 目标: Kobayashi-san Chi no Maid Dragon S00E08
 # [正则条件（左侧含正则语法）] Kobayashi-san Chi no Maid Dragon S \[13\] => Kobayashi-san Chi no Maid Dragon S00E30
@@ -461,13 +407,9 @@
 # [集数偏移 +24] Jujutsu.Kaisen.S02E => Jujutsu.Kaisen.S01E && Jujutsu.Kaisen.S01E <> 2023 >> EP+24
 #   → 目标: Jujutsu.Kaisen.S01E
 # [正则条件（左侧含正则语法）] (?<=Yi.Nian.Yong.Heng.S03.*?)2024 => 2020
-#   → 目标: 2020
+#   → 目标: (?<=Yi.Nian.Yong.Heng.S03.*?)2024
 # [集数偏移 +106] Yi.Nian.Yong.Heng.S03 => A.Will.Eternal.S01 && S01 <> 2024 >> EP+106
 #   → 目标: A.Will.Eternal
-# [集数偏移 +106] A.Will.Eternal.S03 => A.Will.Eternal.S01 && S01 <> 2024 >> EP+106
-#   → 目标: A.Will.Eternal
-# [集数偏移 +52] A.Will.Eternal.2022.S02 => A.Will.Eternal.2020.S01 && A.Will.Eternal.2020.S01 <> 2160p >> EP+52
-#   → 目标: A.Will.Eternal.2020
 # [正则条件（左侧含正则语法）] Baka to Test to Shoukanjuu Ni! (\d{2,3}) => Baka to Test to Shoukanjuu S02 E\1
 #   → 目标: Baka to Test to Shoukanjuu S02 E\1
 # [正则条件（左侧含正则语法）] Baka to Test to Shoukanjuu (\d{2,3}) => Baka to Test to Shoukanjuu S01 E\1
@@ -478,122 +420,38 @@
 #   → 目标: 喵萌奶茶屋
 # [正则条件（左侧含正则语法）] \[orion origin\] => [猎户压制部]
 #   → 目标: [猎户压制部]
-# [正则条件（左侧含正则语法）] FYSub|楓葉字幕組 => 枫叶字幕组
-#   → 目标: 枫叶字幕组
-# [正则条件（左侧含正则语法）] 桜都字幕組|Sakurato => 桜都字幕组
-#   → 目标: 桜都字幕组
-# [正则条件（左侧含正则语法）] Airota|千夏字幕组 => 千夏字幕组
-#   → 目标: 千夏字幕组
-# [正则条件（左侧含正则语法）] KissSub|愛戀字幕社 => 爱恋字幕社
-#   → 目标: 爱恋字幕社
-# [正则条件（左侧含正则语法）] 貓戀漢化組|Romanticat => 猫恋汉化组
-#   → 目标: 猫恋汉化组
-# [正则条件（左侧含正则语法）] Comicat|漫貓字幕社 => 漫猫字幕社
-#   → 目标: 漫猫字幕社
 # [正则条件（左侧含正则语法）] FZSD|風之聖殿 => 风之圣殿
 #   → 目标: 风之圣殿
-# [正则条件（左侧含正则语法）] XKsub|星空字幕組|XK SPIRITS => 星空字幕组
-#   → 目标: 星空字幕组
-# [正则条件（左侧含正则语法）] HYSUB|幻櫻字幕組 => 幻樱字幕组
-#   → 目标: 幻樱字幕组
-# [正则条件（左侧含正则语法）] SBSUB|銀色子彈字幕組 => 银色子弹字幕组
-#   → 目标: 银色子弹字幕组
 # [正则条件（左侧含正则语法）] (?i)\bPCSUB\b => 波洛咖啡厅
 #   → 目标: 波洛咖啡厅
-# [正则条件（左侧含正则语法）] (?i)\bImoeer\b => 启萌字幕组
-#   → 目标: 启萌字幕组
-# [正则条件（左侧含正则语法）] (?i)\bKTXP\b => 极影字幕社
-#   → 目标: 极影字幕社
-# [正则条件（左侧含正则语法）] (?i)\bYUI-7\b => 西农YUI汉化组
-#   → 目标: 西农YUI汉化组
-# [正则条件（左侧含正则语法）] (?i)\bSBSUB\b => 银色子弹字幕组
-#   → 目标: 银色子弹字幕组
-# [正则条件（左侧含正则语法）] (?i)\bKyokuSai\b => 極彩字幕组
-#   → 目标: 極彩字幕组
 # [正则条件（左侧含正则语法）] (?i)\bSTYHSub\b => 霜庭云花Sub
 #   → 目标: 霜庭云花Sub
 # [正则条件（左侧含正则语法）] (?i)\bDMMOESub\b => 动漫萌Sub
 #   → 目标: 动漫萌Sub
-# [正则条件（左侧含正则语法）] (?i)\bSWSUB\b => SW字幕组
-#   → 目标: SW字幕组
 # [正则条件（左侧含正则语法）] (?i)\bDMMSub\b => 动漫萌Sub
 #   → 目标: 动漫萌Sub
-# [正则条件（左侧含正则语法）] (?i)\bComicat\b => 漫猫字幕社
-#   → 目标: 漫猫字幕社
-# [正则条件（左侧含正则语法）] (?i)\bRomanticat\b => 猫恋汉化组
-#   → 目标: 猫恋汉化组
-# [正则条件（左侧含正则语法）] (?i)\bKissSub\b => 爱恋字幕社
-#   → 目标: 爱恋字幕社
 # [正则条件（左侧含正则语法）] (?i)\bOPFansMaplesnow\b => OPFans枫雪动漫
 #   → 目标: OPFans枫雪动漫
 # [正则条件（左侧含正则语法）] \[GM-Team\]\[国漫\] => [GM-Team]
 #   → 目标: [GM-Team]
-# [正则条件（左侧含正则语法）] (?i)\bCoolComic404\b => 酷漫字幕组
-#   → 目标: 酷漫字幕组
 # [正则条件（左侧含正则语法）] (?i)\bSumiSora\b => 澄空学园
 #   → 目标: 澄空学园
 # [正则条件（左侧含正则语法）] (?i)\bYYDM-11FANS\b => 异域-11番小队
 #   → 目标: 异域-11番小队
-# [正则条件（左侧含正则语法）] (?i)\bLKSUB\b => 轻之国度字幕组
-#   → 目标: 轻之国度字幕组
-# [正则条件（左侧含正则语法）] (?i)\bKitaujiSub\b => 北宇治字幕组
-#   → 目标: 北宇治字幕组
-# [正则条件（左侧含正则语法）] (?i)\bFYSub\b => 枫叶字幕组
-#   → 目标: 枫叶字幕组
 # [正则条件（左侧含正则语法）] (?i)\bYYSUB-RAW\b => 夜莺家族
 #   → 目标: 夜莺家族
-# [正则条件（左侧含正则语法）] (?i)\bTodokoi\b => 届恋字幕组
-#   → 目标: 届恋字幕组
-# [正则条件（左侧含正则语法）] (?i)\bHYSUB\b => 幻樱字幕组
-#   → 目标: 幻樱字幕组
-# [正则条件（左侧含正则语法）] (?i)\bDMG\b => 动漫国字幕组
-#   → 目标: 动漫国字幕组
-# [正则条件（左侧含正则语法）] (?i)\bigsub\b => 爱咕字幕组
-#   → 目标: 爱咕字幕组
-# [正则条件（左侧含正则语法）] (?i)\bUHA-Wing\b => 悠哈璃羽字幕社
-#   → 目标: 悠哈璃羽字幕社
 # [正则条件（左侧含正则语法）] (?i)\bH-BBR\b => 氢气烤肉架
 #   → 目标: 氢气烤肉架
-# [正则条件（左侧含正则语法）] (?i)\bBeanSub\b => 豌豆字幕组
-#   → 目标: 豌豆字幕组
-# [正则条件（左侧含正则语法）] (?i)\bFZSD\b => 风之圣殿字幕组
-#   → 目标: 风之圣殿字幕组
-# [正则条件（左侧含正则语法）] (?i)\bMCE\b => MCE汉化组
-#   → 目标: MCE汉化组
-# [正则条件（左侧含正则语法）] \x20*(&|＆)\x20* => &
-#   → 目标: &
 # [正则条件（左侧含正则语法）] (?i)\borion origin\b => 猎户发布组
 #   → 目标: 猎户发布组
-# [正则条件（左侧含正则语法）] (?i)\bAirota\b => 千夏字幕组
-#   → 目标: 千夏字幕组
 # [正则条件（左侧含正则语法）] (?i)\bLPSub\b => 离谱Sub
 #   → 目标: 离谱Sub
 # [正则条件（左侧含正则语法）] (ASSx2|ASS) => 简繁内封
 #   → 目标: 简繁内封
-# [正则条件（左侧含正则语法）] (?i)\bUHA-WINGS\b => 悠哈璃羽字幕社
-#   → 目标: 悠哈璃羽字幕社
-# [正则条件（左侧含正则语法）] (?i)\bMahoMabo\b => 魔穗字幕组&幻之字幕组
-#   → 目标: 魔穗字幕组&幻之字幕组
-# [正则条件（左侧含正则语法）] (?i)\bMabors Sub\b|魔穗字幕组|魔穗 => 魔穗字幕组
-#   → 目标: 魔穗字幕组
-# [正则条件（左侧含正则语法）] (?i)\bMabors Sub\b|幻之字幕组|幻之 => 幻之字幕组
-#   → 目标: 幻之字幕组
 # [正则条件（左侧含正则语法）] (?i)\bsuzume Ryokosha\b => 玲芽旅行团
 #   → 目标: 玲芽旅行团
 # [正则条件（左侧含正则语法）] (?i)\bHaruhana\b => ❀拨雪寻春❀
 #   → 目标: ❀拨雪寻春❀
-# [正则条件（左侧含正则语法）] (?i)\bMingYSub\b|\bMingY\b => MingYSub
-#   → 目标: MingYSub
-# [正则条件（左侧含正则语法）] (\[|【|&)Lemonade(】|]|&) => \1波子汽水汉化组\2
-#   → 目标: \1波子汽水汉化组\2
-# [正则条件（左侧含正则语法）] (?i)\bXKsub\b|(?i)\bXK SPIRITS\b => 星空字幕组
-#   → 目标: 星空字幕组
-# [正则条件（左侧含正则语法）] (?i)\bSakurato\b|樱都字幕组|桜都字幕组|桜都 => 桜都字幕组
-#   → 目标: 桜都字幕组
-# [正则条件（左侧含正则语法）] (?i)\bCoolFansSub\b => 冷番补完字幕组
-#   → 目标: 冷番补完字幕组
-# [正则条件（左侧含正则语法）] (?i)\bShirokoi\b => 白恋字幕组
-#   → 目标: 白恋字幕组
 # [正则条件（左侧含正则语法）] (?i)\bFLsnow\b => 雪飘工作室
 #   → 目标: 雪飘工作室
 # [正则条件（左侧含正则语法）] (?i)(CHS|GB|SC)(&|_|＆|\x20)(CHT|BIG5|TC)(&|_|＆|\x20)JA?PN? => 简繁日内封
@@ -618,8 +476,6 @@
 #   → 目标: [猎户手抄部]
 # [正则条件（左侧含正则语法）] \[Strange-Raw\].*\/ => [Strange-Raw]
 #   → 目标: [Strange-Raw]
-# [正则条件（左侧含正则语法）] \[桜都字幕组\].*\/ => [桜都字幕组]
-#   → 目标: [桜都字幕组]
 # [正则条件（左侧含正则语法）] \[ANi\].*\/ => [ANi]
 #   → 目标: [ANi]
 # [正则条件（左侧含正则语法）] \[雪飘工作室\].*\/ => [雪飘工作室]
