@@ -39,3 +39,5 @@ node convert-moviepilot-words.mjs <上游词表文件...> --out Word
 仓库已配置定时流水线(`.github/workflows/convert.yml`):每天北京 04:30 自动拉取上游 `Words/*.txt` → 转换 → 有变化则提交并刷新 jsDelivr CDN,也可在仓库 Actions 页面手动触发。danmu_api 侧按 `TITLE_MAPPING_TABLE_URL_CACHE_MINUTES`(默认 60 分钟)自动跟进。
 
 **添加自己的词**:在 `Word/my-words.txt` 按上游语法写(`左侧 => 右侧`),Action 转换时自动并入且不会被上游更新覆盖;`Word/auto-match-draft.txt` 为季/集修正规则的人工整理稿,Action 不会改动它。
+
+**配置抓取哪些上游**:编辑根目录 `sources.txt`,每行一个地址——GitHub 目录页(自动抓全目录 txt)/GitHub 文件页(单文件)/任意 txt 直链,改完下次 Action 运行即生效。
