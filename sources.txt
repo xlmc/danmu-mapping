@@ -8,4 +8,8 @@
 #      → 直接下载(需为纯文本,MoviePilot 识别词语法)
 # 修改后无需其他操作,下次 Action 运行(每天 04:30 或手动触发)即按新列表抓取
 
-https://github.com/Putarku/MoviePilot-Help/tree/main/Words
+https://raw.githubusercontent.com/Putarku/MoviePilot-Help/main/Words/general.txt
+https://raw.githubusercontent.com/Putarku/MoviePilot-Help/main/Words/2025.01.txt
+https://raw.githubusercontent.com/Putarku/MoviePilot-Help/refs/heads/main/Words/2026.txt
+https://raw.githubusercontent.com/Putarku/MoviePilot-Help/main/Words/2026-tmdb.txt
+https://raw.githubusercontent.com/Putarku/MoviePilot-Help/refs/heads/main/Words/anime.txt
