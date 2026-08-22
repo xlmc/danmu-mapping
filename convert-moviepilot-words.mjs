@@ -230,20 +230,33 @@ function deriveBareKeyVariants(mappings, stats) {
   stats.bareAmbiguous = ambiguous.size;
 }
 
-// ================= 剧名+季数 组合键 =================
-// 本项目 match 流程按「解析出的剧名 + 季数」检索（TITLE_MAPPING_TABLE 命中裸剧名后，
-// 季数作为独立参数参与搜索）。带季规则除裸键外，再生成 「裸剧名 S01」 形态的组合键：
-// 同剧多季可指向不同目标而互不歧义；danmu_api 端会先试 剧名+季 组合键、再退回裸剧名。
+// ================= 剧名+年份/季 组合键 =================
+// danmu_api 的 match 会把文件名解析成 「剧名 + 年份 + 季」 并据此检索映射表。
+// 为还原解析前/后的各种文件命名形态，本节为 规范键（剧名.年份.S季 / 剧名 年份 S季）生成：
+//   - 「裸剧名 Sxx」          ：Monster Island S01
+//   - 「裸剧名 年份」         ：Monster Island 2017
+//   - 「裸剧名 年份 Sxx」     ：Monster Island 2017 S01 / Monster Island S01 2017
+// 同时把 点号/空格 双形态都覆盖（Monster.Island ≡ Monster Island）。
 function deriveSeasonQualifiedKeys(mappings, stats) {
   let added = 0, ambiguous = 0;
   const pending = [];
   for (const [key, target] of mappings) {
-    const m = key.match(/^(.+?)[\s._-](S\d{1,2})$/i);
+    const m = key.match(/^(.+?)[\s._-]+((?:19|20)\d{2})?[\s._-]*(S\d{1,2})$/i);
     if (!m) continue;
     const bare = m[1].trim().replace(/[._]+$/, '');
     if (!bare) continue;
+    const year = m[2] ? m[2] : null;
+    const season = m[3].toUpperCase();
     for (const base of new Set([bare, bare.replace(/\./g, ' ')])) {
-      pending.push([`${base} ${m[2].toUpperCase()}`, target]);
+      // 裸剧名 Sxx
+      pending.push([`${base} ${season}`, target]);
+      if (year) {
+        // 裸剧名 年份 Sxx（两种顺序）
+        pending.push([`${base} ${year} ${season}`, target]);
+        pending.push([`${base} ${season} ${year}`, target]);
+        // 裸剧名 年份
+        pending.push([`${base} ${year}`, target]);
+      }
     }
   }
   for (const [ck, target] of pending) {

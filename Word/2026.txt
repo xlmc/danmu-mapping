@@ -1,5 +1,5 @@
 # danmu_api 剧名映射表（由 MoviePilot 共享识别词自动转换）
-# 转换日期: 2026-08-22 | 规则数: 317（原始 194 + 裸标题变体 117 + 剧名×季组合键 6）
+# 转换日期: 2026-08-22 | 规则数: 329（原始 194 + 裸标题变体 117 + 剧名×季组合键 18）
 # 用法: danmu_api 环境变量 TITLE_MAPPING_TABLE_URL 填本文件的 raw 直链
 # 键形态：完整资源名 / 裸剧名 / 裸剧名 Sxx 三类，分别覆盖手动搜索与自动匹配场景
 # 季/集修正类规则不在此文件，见 season-candidates.txt（配置到 AUTO_MATCH_MAPPING_TABLE）
@@ -316,8 +316,20 @@ LetS Go Anpanman Sparkle Princess Vanilla of the Land of Ice Cream->走起！面
 Eiga Kureyon Shinchan Bakauma B-kyu gurume sabaibaru->蜡笔小新：超级美味！B级美食大逃亡
 Kureyon Shinchan Gekitotsu Rakugakingudamu to Hobo Shi-Ri no Yusha->蜡笔小新：激战！涂鸦王国和约四位勇士
 斗罗大陆.Soul.Land S02->Soul Land II: The Unrivaled Tang
-The.Last.Cook.2024 S01->末代厨娘
+The.Last.Cook S01->末代厨娘
+The.Last.Cook 2024 S01->末代厨娘
+The.Last.Cook S01 2024->末代厨娘
+The.Last.Cook 2024->末代厨娘
+The Last Cook S01->末代厨娘
+The Last Cook S01 2024->末代厨娘
+The Last Cook 2024->末代厨娘
 Hime-sama.Goumon.no.Jikan.desu S02->公主殿下，“拷问”的时间到了
-Agent Backkom：Kings Bear.2021 S01->贝肯熊2：金牌特工
-Backkom Bear Agent 008.2017 S01->大卫贝肯之倒霉特工熊
-Monster Island.2017 S01->怪物岛
+Agent Backkom：Kings Bear S01->贝肯熊2：金牌特工
+Agent Backkom：Kings Bear S01 2021->贝肯熊2：金牌特工
+Agent Backkom：Kings Bear 2021->贝肯熊2：金牌特工
+Backkom Bear Agent 008 S01->大卫贝肯之倒霉特工熊
+Backkom Bear Agent 008 S01 2017->大卫贝肯之倒霉特工熊
+Backkom Bear Agent 008 2017->大卫贝肯之倒霉特工熊
+Monster Island S01->怪物岛
+Monster Island S01 2017->怪物岛
+Monster Island 2017->怪物岛
