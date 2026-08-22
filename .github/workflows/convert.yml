@@ -1,0 +1,53 @@
+name: Convert MoviePilot words
+
+# 定时把上游 MoviePilot 共享识别词转换为 danmu_api 映射表:
+# 拉取 Putarku/MoviePilot-Help 的 Words/*.txt → convert-moviepilot-words.mjs 转换
+# → 有变化则提交 Word/2026.txt 与 season-candidates.txt → purge jsDelivr CDN 缓存
+# 自定义词写在 Word/my-words.txt(MoviePilot 语法),存在时自动并入转换,不会被覆盖
+on:
+  schedule:
+    - cron: '30 20 * * *' # 每天 UTC 20:30(北京 04:30)
+  workflow_dispatch: {} # 支持手动触发
+
+permissions:
+  contents: write
+
+jobs:
+  convert:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download upstream words
+        run: |
+          mkdir -p upstream
+          urls=$(curl -fsSL "https://api.github.com/repos/Putarku/MoviePilot-Help/contents/Words" | jq -r '.[].download_url')
+          for u in $urls; do
+            name=$(basename "$u")
+            curl -fsSL -o "upstream/$name" "$u"
+            echo "downloaded $name"
+          done
+
+      - name: Convert
+        run: |
+          args=(upstream/*.txt)
+          if [ -f Word/my-words.txt ]; then
+            args+=("Word/my-words.txt")
+            echo "merging custom words: Word/my-words.txt"
+          fi
+          node convert-moviepilot-words.mjs "${args[@]}" --out Word
+
+      - name: Commit if changed and purge CDN
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add Word/2026.txt Word/season-candidates.txt
+          if git diff --cached --quiet; then
+            echo "no changes, upstream not updated"
+          else
+            git commit -m "Auto-convert upstream words $(date -u +%F)"
+            git push
+            curl -fsS "https://purge.jsdelivr.net/gh/xlmc/danmu-mapping@main/Word/2026.txt" || true
+            curl -fsS "https://purge.jsdelivr.net/gh/xlmc/danmu-mapping@main/Word/season-candidates.txt" || true
+            echo "pushed and CDN purged"
+          fi
