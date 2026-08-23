@@ -64,7 +64,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add Word/2026.txt Word/season-candidates.txt
+          git add Word/2026.txt Word/season-candidates.txt Source/.converter-cache
           if git diff --cached --quiet; then
             echo "no changes, upstream not updated"
           else

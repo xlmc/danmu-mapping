@@ -31,6 +31,8 @@ TITLE_MAPPING_TABLE_URL=https://cdn.jsdelivr.net/gh/xlmc/danmu-mapping@main/Word
 node convert-moviepilot-words.mjs <上游词表文件...> --out Word
 ```
 
+脚本首次执行时会全量转换，并在 `Source/.converter-cache/` 保存每个源文件的内容哈希和转换结果；后续执行只重新转换新增或内容发生变化的源文件，未变化的源文件直接复用缓存。最终仍会重新生成完整的 `Word/2026.txt` 和 `Word/season-candidates.txt`，因此不会残留已删除规则；转换脚本版本或规则逻辑变化时会自动使缓存失效并全量重建。
+
 转换脚本会输出统计(标题映射数、裸标题变体数、剧名/年份/季组合键、歧义跳过数等);会剥离资源名中的画质、编码、音轨和制作组尾缀，并生成裸标题、标题+年份、标题+季等兼容键；同一裸键指向不同目标时自动跳过,目标含季区间(如 `黑镜S01-S05`)的裸键变体同样跳过。
 
 ## 自动更新(GitHub Action)

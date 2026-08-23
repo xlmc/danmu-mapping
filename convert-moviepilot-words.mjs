@@ -11,6 +11,7 @@
 
 import fs from 'node:fs';
 import path from 'node:path';
+import crypto from 'node:crypto';
 
 // ================= 配置 =================
 const OUT_DIR = (() => {
@@ -19,6 +20,12 @@ const OUT_DIR = (() => {
 })();
 const SOURCES = process.argv.slice(2).filter((a, i, arr) => a !== '--out' && arr[i - 1] !== '--out');
 const GENERATED_AT = new Date().toISOString().slice(0, 10);
+
+// 增量转换缓存：首次全量转换，后续仅重新转换内容发生变化的源文件。
+// 只要转换脚本/规则逻辑版本改变，就自动放弃旧缓存并重新全量转换。
+const CONVERTER_CACHE_VERSION = '3';
+const CONVERTER_CACHE_DIR = path.resolve('Source', '.converter-cache');
+const CONVERTER_MANIFEST = path.join(CONVERTER_CACHE_DIR, 'manifest.json');
 
 // 左侧含任一字符即视为正则规则（无法作为精确匹配键），转入季集候选清单
 const REGEX_META = /[\\()\[\]{}?*+|^$]/;
@@ -140,6 +147,58 @@ function convertLine(rawLine, stats, mappings, candidates) {
   if (mappings.has(left)) { stats.duplicates++; return; }
   mappings.set(left, right);
   stats.mappings++;
+}
+
+
+function sourceCacheId(source) {
+  return crypto.createHash('sha256').update(String(source)).digest('hex').slice(0, 24);
+}
+
+function sourceContentHash(text) {
+  return crypto.createHash('sha256').update(text, 'utf8').digest('hex');
+}
+
+function emptyStats() {
+  return { mappings: 0, seasonCandidates: 0, anchorOnly: 0, identity: 0, duplicates: 0, bareVariants: 0, bareAmbiguous: 0, seasonKeys: 0, seasonKeyAmbiguous: 0, noise: 0, anchorResidue: 0 };
+}
+
+function addStats(target, source) {
+  for (const key of Object.keys(target)) target[key] += Number(source?.[key] || 0);
+}
+
+function readConverterCache(source, text) {
+  try {
+    const file = path.join(CONVERTER_CACHE_DIR, `${sourceCacheId(source)}.json`);
+    if (!fs.existsSync(CONVERTER_MANIFEST) || !fs.existsSync(file)) return null;
+    const manifest = JSON.parse(fs.readFileSync(CONVERTER_MANIFEST, 'utf8'));
+    if (manifest.version !== CONVERTER_CACHE_VERSION || manifest.sources?.[source] !== sourceContentHash(text)) return null;
+    const cached = JSON.parse(fs.readFileSync(file, 'utf8'));
+    if (!Array.isArray(cached.mappings) || !Array.isArray(cached.candidates)) return null;
+    return cached;
+  } catch {
+    return null;
+  }
+}
+
+function writeConverterCache(entries) {
+  fs.mkdirSync(CONVERTER_CACHE_DIR, { recursive: true });
+  const manifest = { version: CONVERTER_CACHE_VERSION, sources: {} };
+  for (const entry of entries) {
+    manifest.sources[entry.source] = sourceContentHash(entry.text);
+    const file = path.join(CONVERTER_CACHE_DIR, `${sourceCacheId(entry.source)}.json`);
+    fs.writeFileSync(file, JSON.stringify({
+      mappings: entry.mappings,
+      candidates: entry.candidates,
+      stats: entry.stats,
+    }));
+  }
+  // 清理已从 Source 地址列表移除的旧缓存文件，避免增量合并残留旧规则。
+  const activeIds = new Set(entries.map(entry => `${sourceCacheId(entry.source)}.json`));
+  for (const name of fs.readdirSync(CONVERTER_CACHE_DIR)) {
+    if (name === 'manifest.json' || activeIds.has(name)) continue;
+    if (name.endsWith('.json')) fs.rmSync(path.join(CONVERTER_CACHE_DIR, name), { force: true });
+  }
+  fs.writeFileSync(CONVERTER_MANIFEST, JSON.stringify(manifest, null, 2) + '\n');
 }
 
 // ================= 裸标题变体 =================
@@ -274,10 +333,32 @@ async function main() {
   const mappings = new Map();
   const candidates = [];
 
+  const cacheEntries = [];
   for (const src of SOURCES) {
     const { name, text } = await readSource(src);
-    for (const line of text.split(/\r?\n/)) convertLine(line, stats, mappings, candidates);
+    const cached = readConverterCache(name, text);
+    let entry;
+    if (cached) {
+      entry = { source: name, text, mappings: cached.mappings, candidates: cached.candidates, stats: cached.stats };
+      console.log(`复用缓存: ${name}`);
+    } else {
+      const sourceStats = emptyStats();
+      const sourceMappings = new Map();
+      const sourceCandidates = [];
+      for (const line of text.split(/\r?\n/)) convertLine(line, sourceStats, sourceMappings, sourceCandidates);
+      entry = { source: name, text, mappings: [...sourceMappings.entries()], candidates: sourceCandidates, stats: sourceStats };
+      console.log(`重新转换: ${name}`);
+    }
+    cacheEntries.push(entry);
+    addStats(stats, entry.stats);
+    for (const [key, target] of entry.mappings) {
+      if (mappings.has(key)) stats.duplicates++;
+      else mappings.set(key, target);
+    }
+    candidates.push(...entry.candidates);
   }
+  stats.mappings = mappings.size;
+  writeConverterCache(cacheEntries);
 
   deriveBareKeyVariants(mappings, stats);
   deriveSeasonQualifiedKeys(mappings, stats);
