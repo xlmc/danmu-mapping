@@ -5,4 +5,8 @@
 # GitHub 文件示例：
 # https://github.com/Putarku/MoviePilot-Help/blob/main/Words/2026-tmdb.txt
 
-https://github.com/Putarku/MoviePilot-Help/tree/main/Words
+https://raw.githubusercontent.com/Putarku/MoviePilot-Help/main/Words/general.txt
+https://raw.githubusercontent.com/Putarku/MoviePilot-Help/main/Words/2025.01.txt
+https://raw.githubusercontent.com/Putarku/MoviePilot-Help/refs/heads/main/Words/2026.txt
+https://raw.githubusercontent.com/Putarku/MoviePilot-Help/main/Words/2026-tmdb.txt
+https://raw.githubusercontent.com/Putarku/MoviePilot-Help/refs/heads/main/Words/anime.txt
