@@ -1,1 +1,8 @@
+# MoviePilot 词表地址配置：每行一个地址，# 开头为注释
+# 支持 GitHub 目录页、GitHub 文件页或 TXT 直链。
+# GitHub 目录示例：
+# https://github.com/Putarku/MoviePilot-Help/tree/main/Words
+# GitHub 文件示例：
+# https://github.com/Putarku/MoviePilot-Help/blob/main/Words/2026-tmdb.txt
 
+https://github.com/Putarku/MoviePilot-Help/tree/main/Words

@@ -18,7 +18,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Download upstream words from sources.txt
+      - name: Download upstream words from Source/source.txt
         run: |
           mkdir -p upstream
           i=0
@@ -46,7 +46,7 @@ jobs:
               name="src${i}_$(basename "$line" | sed 's/[?#].*//')"
               curl -fsSL -o "upstream/$name" "$line" && echo "downloaded $name"
             fi
-          done < sources.txt
+          done < Source/source.txt
           count=$(ls upstream/*.txt 2>/dev/null | wc -l)
           echo "total files: $count"
           [ "$count" -gt 0 ] || { echo "no upstream files downloaded, check sources.txt"; exit 1; }
