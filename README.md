@@ -42,3 +42,13 @@ node convert-moviepilot-words.mjs <上游词表文件...> --out Word
 **添加自己的词**:在 `Word/my-words.txt` 按上游语法写(`左侧 => 右侧`),Action 转换时自动并入且不会被上游更新覆盖;`Word/auto-match-draft.txt` 为季/集修正规则的人工整理稿,Action 不会改动它。
 
 **配置抓取哪些上游**:编辑 `Source/source.txt`,每行一个地址——GitHub 目录页(自动抓全目录 txt)/GitHub 文件页(单文件)/任意 txt 直链,改完下次 Action 运行即生效。
+
+## 致谢
+
+感谢以下上游项目及维护者的持续维护与分享：
+
+- [MoviePilot-Help](https://github.com/Putarku/MoviePilot-Help)
+- 感谢上游维护者 [Putarku](https://github.com/Putarku) 维护 MoviePilot 共享识别词表
+- 感谢所有参与词表补充、修正和维护的贡献者
+
+本项目仅对上游词表进行转换和整理，原始规则及其维护权归上游项目及贡献者所有。
