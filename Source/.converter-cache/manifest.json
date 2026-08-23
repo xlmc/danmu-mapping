@@ -1,0 +1,10 @@
+{
+  "version": "3",
+  "sources": {
+    "upstream/src1_general.txt": "8f26e716c072e0b56e83be8d46f97bc7e5e80ee83be7fe7f7795670e735ea870",
+    "upstream/src2_2025.01.txt": "efc7c7d2e1ee5052fb7cbca87953cfb8921b346711e328661ee7b5dc3be3cf70",
+    "upstream/src3_2026.txt": "cf830c9d65e56b0b884d3b913396c321a39924edafefe61327ebe5fa0f105a02",
+    "upstream/src4_2026-tmdb.txt": "e654197d30e7e9da6d6f5a832b99663da616fab96cc3dbbc4a55789c396e175b",
+    "upstream/src5_anime.txt": "a532a0ace2e9ea63ddfab6e5f5fe062c162ff47b1cc6a50fd00661e503968cc9"
+  }
+}
