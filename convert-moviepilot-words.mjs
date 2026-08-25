@@ -1,9 +1,10 @@
 #!/usr/bin/env node
 // 将 MoviePilot 共享识别词文件（Putarku/MoviePilot-Help 等）转换为 danmu_api 剧名映射表格式。
 //
-// 产出两个文件：
+// 产出三个文件：
 //   1. <outDir>/2026.txt            —— 「原始标题->映射标题」精确映射，供 TITLE_MAPPING_TABLE_URL 使用
 //   2. <outDir>/season-candidates.txt —— 季/集修正类规则候选，需人工整理后配置到 AUTO_MATCH_MAPPING_TABLE
+//   3. <outDir>/auto-match.txt         —— 从人工整理稿发布的有限范围规则，供 AUTO_MATCH_MAPPING_TABLE_URL 使用
 //
 // 用法：node convert-moviepilot-words.mjs <输入文件1> [输入文件2 ...] [--out <目录>]
 //   输入可以是本地路径，也可以是 http(s) URL（GitHub Action 中直接用上游 raw 链接）。
@@ -328,6 +329,45 @@ function deriveSeasonQualifiedKeys(mappings, stats) {
   stats.seasonKeyAmbiguous = ambiguous;
 }
 
+function compactAutoTitle(value) {
+  return String(value || '').normalize('NFKC').toLowerCase().replace(/[^\p{L}\p{N}]/gu, '');
+}
+
+function buildVerifiedAutoMatchTable(mappings) {
+  const draftPath = path.join(OUT_DIR, 'auto-match-draft.txt');
+  const verified = [];
+  const rejected = [];
+  if (!fs.existsSync(draftPath)) return { verified, rejected };
+
+  for (const rawLine of fs.readFileSync(draftPath, 'utf8').split(/\r?\n/)) {
+    const line = rawLine.trim();
+    if (!line || line.startsWith('#') || line.startsWith('//')) continue;
+    const match = line.match(/^(.+?)\s+S(\d+)E(\d+)~E?(\d+)\s*->\s*(.+?)\s+S(\d+)E(\d+)~E?(\d+)(?:\s+@([A-Za-z0-9_-]+))?$/i);
+    if (!match) {
+      rejected.push({ line, reason: '远程表只发布带起止集的有限范围规则' });
+      continue;
+    }
+    const sourceLength = Number(match[4]) - Number(match[3]);
+    const targetLength = Number(match[8]) - Number(match[7]);
+    if (sourceLength < 0 || sourceLength !== targetLength) {
+      rejected.push({ line, reason: '源与目标范围长度不一致' });
+      continue;
+    }
+    const sourceTitleKey = compactAutoTitle(match[1]);
+    const sourceSeason = Number(match[2]);
+    const overlapsTitleTable = [...mappings.keys()].some(key => {
+      const normalized = String(key).replace(/(?:19|20)\d{2}/g, '').replace(/S0*\d+.*$/i, '');
+      return compactAutoTitle(normalized) === sourceTitleKey;
+    });
+    if (overlapsTitleTable) {
+      rejected.push({ line, reason: `与 2026.txt 标题规则重叠（S${sourceSeason}），避免标题成功后季集规则永远不可达` });
+      continue;
+    }
+    verified.push(line);
+  }
+  return { verified: [...new Set(verified)], rejected };
+}
+
 async function main() {
   const stats = { mappings: 0, seasonCandidates: 0, anchorOnly: 0, identity: 0, duplicates: 0, bareVariants: 0, bareAmbiguous: 0, seasonKeys: 0, seasonKeyAmbiguous: 0, noise: 0, anchorResidue: 0 };
   const mappings = new Map();
@@ -381,13 +421,24 @@ async function main() {
     '',
     ...candidates.map(c => `# [${c.reason}] ${c.raw}\n#   → 目标: ${c.title}`),
   ].join('\n') + '\n';
+  const autoMatch = buildVerifiedAutoMatchTable(mappings);
+  const autoMatchLines = [
+    '# danmu_api 远程季集映射表（仅发布人工确认的有限范围规则）',
+    `# 生成日期: ${GENERATED_AT} | 生效规则: ${autoMatch.verified.length} | 未发布开放规则: ${autoMatch.rejected.length}`,
+    '# 本机 AUTO_MATCH_MAPPING_TABLE 优先；本文件不得写无结束集的开放规则。',
+    '# TMDB 可作为内部限定写在目标标题后：{[tmdbid=12345;type=tv]}，不会进入播放器返回字段。',
+  ];
+  if (autoMatch.verified.length > 0) autoMatchLines.push('', ...autoMatch.verified);
+  const autoMatchText = autoMatchLines.join('\n') + '\n';
 
   fs.mkdirSync(OUT_DIR, { recursive: true });
   fs.writeFileSync(path.join(OUT_DIR, '2026.txt'), mappingText);
   fs.writeFileSync(path.join(OUT_DIR, 'season-candidates.txt'), candidatesText);
+  fs.writeFileSync(path.join(OUT_DIR, 'auto-match.txt'), autoMatchText);
 
   console.log(`规则统计: 标题映射 ${stats.mappings} | 裸标题变体 +${stats.bareVariants}（歧义跳过 ${stats.bareAmbiguous}） | 剧名×季组合键 +${stats.seasonKeys}（冲突跳过 ${stats.seasonKeyAmbiguous}） | 季集候选 ${stats.seasonCandidates} | 噪声跳过 ${stats.noise} | 锚定残留跳过 ${stats.anchorResidue} | 纯锚定跳过 ${stats.anchorOnly} | 自我锚定跳过 ${stats.identity} | 重复跳过 ${stats.duplicates}`);
-  console.log(`输出: ${path.join(OUT_DIR, '2026.txt')} / ${path.join(OUT_DIR, 'season-candidates.txt')}`);
+  console.log(`远程季集表: 生效 ${autoMatch.verified.length} | 拒绝开放/无效 ${autoMatch.rejected.length}`);
+  console.log(`输出: ${path.join(OUT_DIR, '2026.txt')} / ${path.join(OUT_DIR, 'season-candidates.txt')} / ${path.join(OUT_DIR, 'auto-match.txt')}`);
 }
 
 main().catch(e => { console.error(e); process.exit(1); });

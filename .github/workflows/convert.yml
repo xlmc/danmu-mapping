@@ -64,7 +64,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add Word/2026.txt Word/season-candidates.txt Source/.converter-cache
+          git add Word/2026.txt Word/season-candidates.txt Word/auto-match.txt Source/.converter-cache
           if git diff --cached --quiet; then
             echo "no changes, upstream not updated"
           else
@@ -72,5 +72,6 @@ jobs:
             git push
             curl -fsS "https://purge.jsdelivr.net/gh/xlmc/danmu-mapping@main/Word/2026.txt" || true
             curl -fsS "https://purge.jsdelivr.net/gh/xlmc/danmu-mapping@main/Word/season-candidates.txt" || true
+            curl -fsS "https://purge.jsdelivr.net/gh/xlmc/danmu-mapping@main/Word/auto-match.txt" || true
             echo "pushed and CDN purged"
           fi

@@ -55,4 +55,4 @@ Bleach Thousand Year Blood War S04E1 -> 死神 千年血战篇-祸进谭- S01E1
 #    AUTO_MATCH 规则要求季为整数,不适用;此类靠标题映射表(2026.txt)处理或放弃
 # 2. 字幕组前缀正则(猎户手抄部/ANi/幻樱等 200+ 条):danmu_api 的 match 自带文件名清洗,
 #    无需此类规则
-# 3. 纯 TMDB 锚定规则({[tmdbid=...]}):映射表无法表达,且 danmu_api 不按 tmdbid 匹配
+# 3. 纯 TMDB 锚定规则({[tmdbid=...]}):只能作为目标候选的内部限定，不能单独替代标题与有限季集范围
