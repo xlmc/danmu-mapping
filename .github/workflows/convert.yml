@@ -2,7 +2,7 @@ name: Convert MoviePilot words
 
 # 定时把上游 MoviePilot 共享识别词转换为 danmu_api 映射表:
 # 按 sources.txt 抓取上游(GitHub 目录页自动全抓/单文件直链)→ convert-moviepilot-words.mjs 转换
-# → 有变化则提交 Word/2026.txt 与 season-candidates.txt → purge jsDelivr CDN 缓存
+# → 有变化则提交 Word/2026.txt、season-candidates.txt 与候选报告 → purge jsDelivr CDN 缓存
 # 自定义词写在 Word/my-words.txt(MoviePilot 语法),存在时自动并入转换,不会被覆盖
 on:
   schedule:
@@ -64,7 +64,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add Word/2026.txt Word/season-candidates.txt Source/.converter-cache
+          git add Word/2026.txt Word/season-candidates.txt Word/season-candidates-report.txt Source/.converter-cache
           if git diff --cached --quiet; then
             echo "no changes, upstream not updated"
           else
@@ -72,5 +72,6 @@ jobs:
             git push
             curl -fsS "https://purge.jsdelivr.net/gh/xlmc/danmu-mapping@main/Word/2026.txt" || true
             curl -fsS "https://purge.jsdelivr.net/gh/xlmc/danmu-mapping@main/Word/season-candidates.txt" || true
+            curl -fsS "https://purge.jsdelivr.net/gh/xlmc/danmu-mapping@main/Word/season-candidates-report.txt" || true
             echo "pushed and CDN purged"
           fi

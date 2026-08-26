@@ -21,11 +21,12 @@ TITLE_MAPPING_TABLE_URL=https://cdn.jsdelivr.net/gh/xlmc/danmu-mapping@main/Word
 | 文件 | 用途 |
 |---|---|
 | `Word/2026.txt` | 「原始标题->映射标题」精确映射表,供 `TITLE_MAPPING_TABLE_URL` 拉取;含剥季/剥年后的裸标题变体,保证 match 场景(文件名解析剥离季/年)仍能命中 |
-| `Word/auto-match.txt` | 本地转换时生成的季集规则产物；不随工作流发布，远程使用时请配置 danmu_api 本机规则 |
-| `Word/season-candidates.txt` | 自动提取的季数错位/集数偏移候选，不直接生效 |
-| `Word/auto-match-draft.txt` | 人工整理稿；只有其中非注释且带完整范围的规则会进入本地 `auto-match.txt` |
+| `Word/season-candidates.txt` | 远程运行时季集表；只包含明确源/目标季集的有限范围规则，供 `AUTO_MATCH_MAPPING_TABLE_URL` 拉取 |
+| `Word/season-candidates-report.txt` | 无法安全自动转换的季数错位/集数偏移候选报告，仅供人工核对 |
+| `Word/auto-match.txt` | 兼容旧本地流程的人工整理产物；不随工作流发布 |
+| `Word/auto-match-draft.txt` | 人工整理稿；其中非注释且带完整范围的规则会进入运行时季集表和本地兼容 `auto-match.txt` |
 
-`2026.txt` 与本地 `auto-match.txt` 都来自同一批 MoviePilot 规则，但按规则能力分类生成。运行时采用成功即停止：标题缓存实际匹配成功后不再尝试季集缓存；标题缓存失败才尝试季集缓存。转换器会拒绝同时落入两个生效表的重叠源键。
+`2026.txt` 与远程 `season-candidates.txt` 都来自同一批 MoviePilot 规则，但按规则能力分类生成。运行时采用成功即停止：标题缓存实际匹配成功后不再尝试季集缓存；标题失败时再尝试标题+季集组合及季集缓存。两个表允许同源键并存，只有实际匹配成功的路径才会终止后续尝试。
 
 ## 再生成
 
@@ -35,7 +36,7 @@ TITLE_MAPPING_TABLE_URL=https://cdn.jsdelivr.net/gh/xlmc/danmu-mapping@main/Word
 node convert-moviepilot-words.mjs <上游词表文件...> --out Word
 ```
 
-脚本首次执行时会全量转换，并在 `Source/.converter-cache/` 保存每个源文件的内容哈希和转换结果；后续执行只重新转换新增或内容发生变化的源文件，未变化的源文件直接复用缓存。最终会重新生成完整的 `Word/2026.txt`、`Word/season-candidates.txt` 和本地 `Word/auto-match.txt`，因此不会残留已删除规则；转换脚本版本或规则逻辑变化时会自动使缓存失效并全量重建。工作流只发布标题表和候选表，不提交季集 TXT。
+脚本首次执行时会全量转换，并在 `Source/.converter-cache/` 保存每个源文件的内容哈希和转换结果；后续执行只重新转换新增或内容发生变化的源文件，未变化的源文件直接复用缓存。最终会重新生成完整的 `Word/2026.txt`、远程运行时 `Word/season-candidates.txt`、候选报告和本地兼容 `Word/auto-match.txt`，因此不会残留已删除规则；转换脚本版本或规则逻辑变化时会自动使缓存失效并全量重建。工作流发布标题表、运行时季集表和候选报告。
 
 转换脚本会输出统计(标题映射数、裸标题变体数、剧名/年份/季组合键、歧义跳过数等);会剥离资源名中的画质、编码、音轨和制作组尾缀，并生成裸标题、标题+年份、标题+季等兼容键；同一裸键指向不同目标时自动跳过,目标含季区间(如 `黑镜S01-S05`)的裸键变体同样跳过。
 
