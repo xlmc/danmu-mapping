@@ -9,7 +9,8 @@
 
 ### 新增
 
-- **远程运行时季集表**：转换器将可安全识别的有限范围季集规则输出到 `Word/season-candidates.txt`；无法安全转换的规则另存为 `season-candidates-report.txt`，避免把正则和偏移规则直接生效。
+- **远程运行时季集表**：转换器将可安全识别的有限范围季集规则输出到 `Word/season-candidates.txt`；正则、偏移和开放规则直接过滤，避免误生效。
+- **移除候选报告生成**：转换器最终只生成 `2026.txt` 与 `season-candidates.txt` 两个运行时 TXT。
 - **移除 `auto-match.txt` 生成**：当前运行时只使用 `season-candidates.txt`，转换器不再生成无用的兼容文件。
 
 - **增量转换机制**：转换脚本首次全量转换后，在 `Source/.converter-cache/` 保存每个源文件的内容哈希与转换结果

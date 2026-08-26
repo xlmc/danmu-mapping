@@ -4,7 +4,6 @@
 // 产出文件：
 //   1. <outDir>/2026.txt            —— 「原始标题->映射标题」精确映射，供 TITLE_MAPPING_TABLE_URL 使用
 //   2. <outDir>/season-candidates.txt —— 可直接运行的有限范围季/集映射，供 AUTO_MATCH_MAPPING_TABLE_URL 使用
-//   3. <outDir>/season-candidates-report.txt —— 无法安全自动转换的候选，供人工核对
 //
 // 用法：node convert-moviepilot-words.mjs <输入文件1> [输入文件2 ...] [--out <目录>]
 //   输入可以是本地路径，也可以是 http(s) URL（GitHub Action 中直接用上游 raw 链接）。
@@ -448,7 +447,7 @@ async function main() {
     `# 转换日期: ${GENERATED_AT} | 规则数: ${stats.mappings + stats.bareVariants + stats.seasonKeys}（原始 ${stats.mappings} + 裸标题变体 ${stats.bareVariants} + 剧名×季组合键 ${stats.seasonKeys}）`,
     `# 用法: danmu_api 环境变量 TITLE_MAPPING_TABLE_URL 填本文件的 raw 直链`,
     `# 键形态：完整资源名 / 裸剧名 / 裸剧名 Sxx 三类，分别覆盖手动搜索与自动匹配场景`,
-    `# 季/集修正类规则不在此文件，见 season-candidates.txt（运行时表）或 season-candidates-report.txt（候选报告）`,
+    `# 季/集修正类规则不在此文件，见 season-candidates.txt（运行时表）`,
   ].join('\n');
 
   const mappingText = header + '\n\n' + [...mappings.entries()].map(([k, v]) => `${k}->${v}`).join('\n') + '\n';
@@ -462,23 +461,13 @@ async function main() {
   ];
   if (runtimeSeason.rules.length > 0) seasonRuntimeLines.push('', ...runtimeSeason.rules);
 
-  const reportText = [
-    `# 季/集修正规则候选报告（无法安全自动转换的规则）`,
-    `# 生成日期: ${GENERATED_AT} | 共 ${candidates.length} 条`,
-    '# 带正则、EP 偏移、开放范围或缺少明确目标集数的规则不会自动生效。',
-    '# 如需启用，请人工改写为有限范围规则后加入本机 AUTO_MATCH_MAPPING_TABLE。',
-    '',
-    ...candidates.map(c => `# [${c.reason}] ${c.raw}\n#   → 目标: ${c.title}`),
-  ].join('\n') + '\n';
-
   fs.mkdirSync(OUT_DIR, { recursive: true });
   fs.writeFileSync(path.join(OUT_DIR, '2026.txt'), mappingText);
   fs.writeFileSync(path.join(OUT_DIR, 'season-candidates.txt'), seasonRuntimeLines.join('\n') + '\n');
-  fs.writeFileSync(path.join(OUT_DIR, 'season-candidates-report.txt'), reportText);
 
   console.log(`规则统计: 标题映射 ${stats.mappings} | 裸标题变体 +${stats.bareVariants}（歧义跳过 ${stats.bareAmbiguous}） | 剧名×季组合键 +${stats.seasonKeys}（冲突跳过 ${stats.seasonKeyAmbiguous}） | 季集候选 ${stats.seasonCandidates} | 噪声跳过 ${stats.noise} | 锚定残留跳过 ${stats.anchorResidue} | 纯锚定跳过 ${stats.anchorOnly} | 自我锚定跳过 ${stats.identity} | 重复跳过 ${stats.duplicates}`);
   console.log(`远程季集表: 生效 ${runtimeSeason.rules.length} | 拒绝/待人工核对 ${runtimeSeason.rejected.length + draftRules.rejected.length}`);
-  console.log(`输出: ${path.join(OUT_DIR, '2026.txt')} / ${path.join(OUT_DIR, 'season-candidates.txt')} / ${path.join(OUT_DIR, 'season-candidates-report.txt')}`);
+  console.log(`输出: ${path.join(OUT_DIR, '2026.txt')} / ${path.join(OUT_DIR, 'season-candidates.txt')}`);
 }
 
 main().catch(e => { console.error(e); process.exit(1); });
