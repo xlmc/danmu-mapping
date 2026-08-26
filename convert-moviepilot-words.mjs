@@ -1,10 +1,11 @@
 #!/usr/bin/env node
 // 将 MoviePilot 共享识别词文件（Putarku/MoviePilot-Help 等）转换为 danmu_api 剧名映射表格式。
 //
-// 产出三个文件：
+// 产出文件：
 //   1. <outDir>/2026.txt            —— 「原始标题->映射标题」精确映射，供 TITLE_MAPPING_TABLE_URL 使用
-//   2. <outDir>/season-candidates.txt —— 季/集修正类规则候选，需人工整理后配置到 AUTO_MATCH_MAPPING_TABLE
-//   3. <outDir>/auto-match.txt         —— 从人工整理稿发布的有限范围规则，供 AUTO_MATCH_MAPPING_TABLE_URL 使用
+//   2. <outDir>/season-candidates.txt —— 可直接运行的有限范围季/集映射，供 AUTO_MATCH_MAPPING_TABLE_URL 使用
+//   3. <outDir>/season-candidates-report.txt —— 无法安全自动转换的候选，供人工核对
+//   4. <outDir>/auto-match.txt         —— 兼容旧本地流程的人工整理产物（不由工作流发布）
 //
 // 用法：node convert-moviepilot-words.mjs <输入文件1> [输入文件2 ...] [--out <目录>]
 //   输入可以是本地路径，也可以是 http(s) URL（GitHub Action 中直接用上游 raw 链接）。
@@ -24,7 +25,7 @@ const GENERATED_AT = new Date().toISOString().slice(0, 10);
 
 // 增量转换缓存：首次全量转换，后续仅重新转换内容发生变化的源文件。
 // 只要转换脚本/规则逻辑版本改变，就自动放弃旧缓存并重新全量转换。
-const CONVERTER_CACHE_VERSION = '3';
+const CONVERTER_CACHE_VERSION = '4';
 const CONVERTER_CACHE_DIR = path.resolve('Source', '.converter-cache');
 const CONVERTER_MANIFEST = path.join(CONVERTER_CACHE_DIR, 'manifest.json');
 
@@ -329,11 +330,7 @@ function deriveSeasonQualifiedKeys(mappings, stats) {
   stats.seasonKeyAmbiguous = ambiguous;
 }
 
-function compactAutoTitle(value) {
-  return String(value || '').normalize('NFKC').toLowerCase().replace(/[^\p{L}\p{N}]/gu, '');
-}
-
-function buildVerifiedAutoMatchTable(mappings) {
+function buildVerifiedAutoMatchTable() {
   const draftPath = path.join(OUT_DIR, 'auto-match-draft.txt');
   const verified = [];
   const rejected = [];
@@ -353,19 +350,63 @@ function buildVerifiedAutoMatchTable(mappings) {
       rejected.push({ line, reason: '源与目标范围长度不一致' });
       continue;
     }
-    const sourceTitleKey = compactAutoTitle(match[1]);
-    const sourceSeason = Number(match[2]);
-    const overlapsTitleTable = [...mappings.keys()].some(key => {
-      const normalized = String(key).replace(/(?:19|20)\d{2}/g, '').replace(/S0*\d+.*$/i, '');
-      return compactAutoTitle(normalized) === sourceTitleKey;
-    });
-    if (overlapsTitleTable) {
-      rejected.push({ line, reason: `与 2026.txt 标题规则重叠（S${sourceSeason}），避免标题成功后季集规则永远不可达` });
-      continue;
-    }
     verified.push(line);
   }
   return { verified: [...new Set(verified)], rejected };
+}
+
+// 只有“左右两侧都是字面量、且两侧都包含明确的单集号”的 MP 规则，
+// 才能在不猜测范围和不接管弹幕源偏移的前提下自动转换为有限范围规则。
+// 带正则、回溯引用、EP 偏移或开放季集的规则继续留在 report 中，避免过度匹配。
+function parseSafeSeasonCandidate(raw) {
+  const arrowIndex = String(raw || '').indexOf('=>');
+  if (arrowIndex === -1) return null;
+  const left = String(raw).slice(0, arrowIndex).trim();
+  let right = String(raw).slice(arrowIndex + 2).trim();
+  if (!left || !right) return null;
+
+  const modifier = right.search(/\s*(?:&&|<>|>>)/);
+  if (modifier >= 0) return null;
+  right = right.replace(/\s*(?:&&|<>|>>)[\s\S]*$/, '').trim();
+
+  // 目标侧允许保留 TMDB 标记；其余正则元字符一律视为不安全。
+  const stripTmdb = value => value.replace(/\{\[[^\]}]*\]\}/g, '');
+  if (/[\\()[\]{}?*+|^$]/.test(left) || /[\\()[\]{}?*+|^$]/.test(stripTmdb(right))) return null;
+  if (/\\\d/.test(left) || /\\\d/.test(right)) return null;
+
+  const parseSide = value => {
+    const match = value.match(/^(.+?)[\s._-]+S(\d{1,2})[\s._-]*E(\d{1,3})\s*$/i);
+    if (!match) return null;
+    const title = match[1].trim();
+    const season = Number(match[2]);
+    const episode = Number(match[3]);
+    if (!title || season < 1 || episode < 1) return null;
+    return { title, season, episode };
+  };
+
+  const source = parseSide(left);
+  const target = parseSide(right);
+  if (!source || !target) return null;
+  return `${source.title} S${source.season}E${source.episode}~E${source.episode} -> ${target.title} S${target.season}E${target.episode}~E${target.episode}`;
+}
+
+function buildRuntimeSeasonTable(candidates, verifiedDraft) {
+  const rules = [];
+  const seen = new Set();
+  const rejected = [];
+  const add = (line, source = '自动候选') => {
+    const normalized = String(line || '').trim();
+    if (!normalized || seen.has(normalized)) return;
+    seen.add(normalized);
+    rules.push(normalized);
+  };
+
+  for (const line of verifiedDraft || []) add(line, '人工确认');
+  for (const candidate of candidates || []) {
+    const converted = parseSafeSeasonCandidate(candidate.raw);
+    if (converted) add(converted);
+  }
+  return { rules, rejected };
 }
 
 async function main() {
@@ -408,20 +449,20 @@ async function main() {
     `# 转换日期: ${GENERATED_AT} | 规则数: ${stats.mappings + stats.bareVariants + stats.seasonKeys}（原始 ${stats.mappings} + 裸标题变体 ${stats.bareVariants} + 剧名×季组合键 ${stats.seasonKeys}）`,
     `# 用法: danmu_api 环境变量 TITLE_MAPPING_TABLE_URL 填本文件的 raw 直链`,
     `# 键形态：完整资源名 / 裸剧名 / 裸剧名 Sxx 三类，分别覆盖手动搜索与自动匹配场景`,
-    `# 季/集修正类规则不在此文件，见 season-candidates.txt（配置到 AUTO_MATCH_MAPPING_TABLE）`,
+    `# 季/集修正类规则不在此文件，见 season-candidates.txt（运行时表）或 season-candidates-report.txt（候选报告）`,
   ].join('\n');
 
   const mappingText = header + '\n\n' + [...mappings.entries()].map(([k, v]) => `${k}->${v}`).join('\n') + '\n';
-  const candidatesText = [
-    `# 季/集修正规则候选（自动提取，需人工核对后使用）`,
-    `# 生成日期: ${GENERATED_AT} | 共 ${candidates.length} 条`,
-    `# 使用方式: 按官方 AUTO_MATCH_MAPPING_TABLE 语法改写后配置到本地环境变量，`,
-    `#           语法: 剧名 S源季E源集 -> 剧名 S目标季E目标集（集数范围用 ~，如 E01~E12）`,
-    `# 以下按原因分组，== 原始规则 == 后附提取出的目标标题/季数/偏移信息`,
-    '',
-    ...candidates.map(c => `# [${c.reason}] ${c.raw}\n#   → 目标: ${c.title}`),
-  ].join('\n') + '\n';
-  const autoMatch = buildVerifiedAutoMatchTable(mappings);
+  const autoMatch = buildVerifiedAutoMatchTable();
+  const runtimeSeason = buildRuntimeSeasonTable(candidates, autoMatch.verified);
+  const seasonRuntimeLines = [
+    '# danmu_api 远程季集映射表（自动转换的安全有限范围规则）',
+    `# 生成日期: ${GENERATED_AT} | 生效规则: ${runtimeSeason.rules.length}`,
+    '# 仅包含明确源/目标季集的有限范围规则；不会改写弹幕库自身的偏移功能。',
+    '# 本机 AUTO_MATCH_MAPPING_TABLE 优先；匹配过程中只读取本机缓存。',
+  ];
+  if (runtimeSeason.rules.length > 0) seasonRuntimeLines.push('', ...runtimeSeason.rules);
+
   const autoMatchLines = [
     '# danmu_api 远程季集映射表（仅发布人工确认的有限范围规则）',
     `# 生成日期: ${GENERATED_AT} | 生效规则: ${autoMatch.verified.length} | 未发布开放规则: ${autoMatch.rejected.length}`,
@@ -430,15 +471,24 @@ async function main() {
   ];
   if (autoMatch.verified.length > 0) autoMatchLines.push('', ...autoMatch.verified);
   const autoMatchText = autoMatchLines.join('\n') + '\n';
+  const reportText = [
+    `# 季/集修正规则候选报告（无法安全自动转换的规则）`,
+    `# 生成日期: ${GENERATED_AT} | 共 ${candidates.length} 条`,
+    '# 带正则、EP 偏移、开放范围或缺少明确目标集数的规则不会自动生效。',
+    '# 如需启用，请人工改写为有限范围规则后加入本机 AUTO_MATCH_MAPPING_TABLE。',
+    '',
+    ...candidates.map(c => `# [${c.reason}] ${c.raw}\n#   → 目标: ${c.title}`),
+  ].join('\n') + '\n';
 
   fs.mkdirSync(OUT_DIR, { recursive: true });
   fs.writeFileSync(path.join(OUT_DIR, '2026.txt'), mappingText);
-  fs.writeFileSync(path.join(OUT_DIR, 'season-candidates.txt'), candidatesText);
+  fs.writeFileSync(path.join(OUT_DIR, 'season-candidates.txt'), seasonRuntimeLines.join('\n') + '\n');
+  fs.writeFileSync(path.join(OUT_DIR, 'season-candidates-report.txt'), reportText);
   fs.writeFileSync(path.join(OUT_DIR, 'auto-match.txt'), autoMatchText);
 
   console.log(`规则统计: 标题映射 ${stats.mappings} | 裸标题变体 +${stats.bareVariants}（歧义跳过 ${stats.bareAmbiguous}） | 剧名×季组合键 +${stats.seasonKeys}（冲突跳过 ${stats.seasonKeyAmbiguous}） | 季集候选 ${stats.seasonCandidates} | 噪声跳过 ${stats.noise} | 锚定残留跳过 ${stats.anchorResidue} | 纯锚定跳过 ${stats.anchorOnly} | 自我锚定跳过 ${stats.identity} | 重复跳过 ${stats.duplicates}`);
-  console.log(`远程季集表: 生效 ${autoMatch.verified.length} | 拒绝开放/无效 ${autoMatch.rejected.length}`);
-  console.log(`输出: ${path.join(OUT_DIR, '2026.txt')} / ${path.join(OUT_DIR, 'season-candidates.txt')} / ${path.join(OUT_DIR, 'auto-match.txt')}`);
+  console.log(`远程季集表: 生效 ${runtimeSeason.rules.length} | 拒绝/待人工核对 ${runtimeSeason.rejected.length + autoMatch.rejected.length}`);
+  console.log(`输出: ${path.join(OUT_DIR, '2026.txt')} / ${path.join(OUT_DIR, 'season-candidates.txt')} / ${path.join(OUT_DIR, 'season-candidates-report.txt')} / ${path.join(OUT_DIR, 'auto-match.txt')}`);
 }
 
 main().catch(e => { console.error(e); process.exit(1); });
