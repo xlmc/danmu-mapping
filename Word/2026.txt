@@ -1,8 +1,8 @@
 # danmu_api 剧名映射表（由 MoviePilot 共享识别词自动转换）
-# 转换日期: 2026-08-26 | 规则数: 99（原始 77 + 裸标题变体 18 + 剧名×季组合键 4）
+# 转换日期: 2026-08-25 | 规则数: 99（原始 77 + 裸标题变体 18 + 剧名×季组合键 4）
 # 用法: danmu_api 环境变量 TITLE_MAPPING_TABLE_URL 填本文件的 raw 直链
 # 键形态：完整资源名 / 裸剧名 / 裸剧名 Sxx 三类，分别覆盖手动搜索与自动匹配场景
-# 季/集修正类规则不在此文件，见 season-candidates.txt（运行时表）或 season-candidates-report.txt（候选报告）
+# 季/集修正类规则不在此文件，见 season-candidates.txt（配置到 AUTO_MATCH_MAPPING_TABLE）
 
 游乐场少女的异文化交流->与游戏中心的少女异文化交流的故事
 Yuusha.Party.wo.Tsuihou.Sareta.Shiro.Madoushi.S.Rank.Boukensha.ni.Hirowareru.Kono.Shiro.Madoushi.ga.Kikakugaisugiru.S01->被驱逐开勇者派对的白魔导师，被S级冒险者捡到 ～这个白魔导师超规格～
