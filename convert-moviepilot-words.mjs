@@ -5,7 +5,6 @@
 //   1. <outDir>/2026.txt            —— 「原始标题->映射标题」精确映射，供 TITLE_MAPPING_TABLE_URL 使用
 //   2. <outDir>/season-candidates.txt —— 可直接运行的有限范围季/集映射，供 AUTO_MATCH_MAPPING_TABLE_URL 使用
 //   3. <outDir>/season-candidates-report.txt —— 无法安全自动转换的候选，供人工核对
-//   4. <outDir>/auto-match.txt         —— 兼容旧本地流程的人工整理产物（不由工作流发布）
 //
 // 用法：node convert-moviepilot-words.mjs <输入文件1> [输入文件2 ...] [--out <目录>]
 //   输入可以是本地路径，也可以是 http(s) URL（GitHub Action 中直接用上游 raw 链接）。
@@ -330,7 +329,7 @@ function deriveSeasonQualifiedKeys(mappings, stats) {
   stats.seasonKeyAmbiguous = ambiguous;
 }
 
-function buildVerifiedAutoMatchTable() {
+function buildVerifiedDraftRules() {
   const draftPath = path.join(OUT_DIR, 'auto-match-draft.txt');
   const verified = [];
   const rejected = [];
@@ -394,14 +393,14 @@ function buildRuntimeSeasonTable(candidates, verifiedDraft) {
   const rules = [];
   const seen = new Set();
   const rejected = [];
-  const add = (line, source = '自动候选') => {
+  const add = line => {
     const normalized = String(line || '').trim();
     if (!normalized || seen.has(normalized)) return;
     seen.add(normalized);
     rules.push(normalized);
   };
 
-  for (const line of verifiedDraft || []) add(line, '人工确认');
+  for (const line of verifiedDraft || []) add(line);
   for (const candidate of candidates || []) {
     const converted = parseSafeSeasonCandidate(candidate.raw);
     if (converted) add(converted);
@@ -453,8 +452,8 @@ async function main() {
   ].join('\n');
 
   const mappingText = header + '\n\n' + [...mappings.entries()].map(([k, v]) => `${k}->${v}`).join('\n') + '\n';
-  const autoMatch = buildVerifiedAutoMatchTable();
-  const runtimeSeason = buildRuntimeSeasonTable(candidates, autoMatch.verified);
+  const draftRules = buildVerifiedDraftRules();
+  const runtimeSeason = buildRuntimeSeasonTable(candidates, draftRules.verified);
   const seasonRuntimeLines = [
     '# danmu_api 远程季集映射表（自动转换的安全有限范围规则）',
     `# 生成日期: ${GENERATED_AT} | 生效规则: ${runtimeSeason.rules.length}`,
@@ -463,14 +462,6 @@ async function main() {
   ];
   if (runtimeSeason.rules.length > 0) seasonRuntimeLines.push('', ...runtimeSeason.rules);
 
-  const autoMatchLines = [
-    '# danmu_api 远程季集映射表（仅发布人工确认的有限范围规则）',
-    `# 生成日期: ${GENERATED_AT} | 生效规则: ${autoMatch.verified.length} | 未发布开放规则: ${autoMatch.rejected.length}`,
-    '# 本机 AUTO_MATCH_MAPPING_TABLE 优先；本文件不得写无结束集的开放规则。',
-    '# TMDB 可作为内部限定写在目标标题后：{[tmdbid=12345;type=tv]}，不会进入播放器返回字段。',
-  ];
-  if (autoMatch.verified.length > 0) autoMatchLines.push('', ...autoMatch.verified);
-  const autoMatchText = autoMatchLines.join('\n') + '\n';
   const reportText = [
     `# 季/集修正规则候选报告（无法安全自动转换的规则）`,
     `# 生成日期: ${GENERATED_AT} | 共 ${candidates.length} 条`,
@@ -484,11 +475,10 @@ async function main() {
   fs.writeFileSync(path.join(OUT_DIR, '2026.txt'), mappingText);
   fs.writeFileSync(path.join(OUT_DIR, 'season-candidates.txt'), seasonRuntimeLines.join('\n') + '\n');
   fs.writeFileSync(path.join(OUT_DIR, 'season-candidates-report.txt'), reportText);
-  fs.writeFileSync(path.join(OUT_DIR, 'auto-match.txt'), autoMatchText);
 
   console.log(`规则统计: 标题映射 ${stats.mappings} | 裸标题变体 +${stats.bareVariants}（歧义跳过 ${stats.bareAmbiguous}） | 剧名×季组合键 +${stats.seasonKeys}（冲突跳过 ${stats.seasonKeyAmbiguous}） | 季集候选 ${stats.seasonCandidates} | 噪声跳过 ${stats.noise} | 锚定残留跳过 ${stats.anchorResidue} | 纯锚定跳过 ${stats.anchorOnly} | 自我锚定跳过 ${stats.identity} | 重复跳过 ${stats.duplicates}`);
-  console.log(`远程季集表: 生效 ${runtimeSeason.rules.length} | 拒绝/待人工核对 ${runtimeSeason.rejected.length + autoMatch.rejected.length}`);
-  console.log(`输出: ${path.join(OUT_DIR, '2026.txt')} / ${path.join(OUT_DIR, 'season-candidates.txt')} / ${path.join(OUT_DIR, 'season-candidates-report.txt')} / ${path.join(OUT_DIR, 'auto-match.txt')}`);
+  console.log(`远程季集表: 生效 ${runtimeSeason.rules.length} | 拒绝/待人工核对 ${runtimeSeason.rejected.length + draftRules.rejected.length}`);
+  console.log(`输出: ${path.join(OUT_DIR, '2026.txt')} / ${path.join(OUT_DIR, 'season-candidates.txt')} / ${path.join(OUT_DIR, 'season-candidates-report.txt')}`);
 }
 
 main().catch(e => { console.error(e); process.exit(1); });
