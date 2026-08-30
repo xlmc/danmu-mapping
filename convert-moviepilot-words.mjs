@@ -337,14 +337,20 @@ function buildVerifiedDraftRules() {
   for (const rawLine of fs.readFileSync(draftPath, 'utf8').split(/\r?\n/)) {
     const line = rawLine.trim();
     if (!line || line.startsWith('#') || line.startsWith('//')) continue;
-    const match = line.match(/^(.+?)\s+S(\d+)E(\d+)~E?(\d+)\s*->\s*(.+?)\s+S(\d+)E(\d+)~E?(\d+)(?:\s+@([A-Za-z0-9_-]+))?$/i);
+    const match = line.match(/^(.+?)\s+S(\d+)E(\d+)(?:~E?(\d+))?\s*->\s*(.+?)\s+S(\d+)E(\d+)(?:~E?(\d+))?(?:\s+@([A-Za-z0-9_-]+))?$/i);
     if (!match) {
-      rejected.push({ line, reason: '远程表只发布带起止集的有限范围规则' });
+      rejected.push({ line, reason: '规则必须声明明确的源/目标标题、季度和起始集数' });
       continue;
     }
-    const sourceLength = Number(match[4]) - Number(match[3]);
-    const targetLength = Number(match[8]) - Number(match[7]);
-    if (sourceLength < 0 || sourceLength !== targetLength) {
+    const sourceBounded = match[4] !== undefined;
+    const targetBounded = match[8] !== undefined;
+    if (sourceBounded !== targetBounded) {
+      rejected.push({ line, reason: '源与目标必须同时声明范围，或同时使用开放规则' });
+      continue;
+    }
+    const sourceLength = sourceBounded ? Number(match[4]) - Number(match[3]) : null;
+    const targetLength = targetBounded ? Number(match[8]) - Number(match[7]) : null;
+    if (sourceBounded && (sourceLength < 0 || sourceLength !== targetLength)) {
       rejected.push({ line, reason: '源与目标范围长度不一致' });
       continue;
     }
@@ -355,22 +361,26 @@ function buildVerifiedDraftRules() {
 
 // 只有“左右两侧都是字面量、且两侧都包含明确的单集号”的 MP 规则，
 // 才能在不猜测范围和不接管弹幕源偏移的前提下自动转换为有限范围规则。
-// 带正则、回溯引用、EP 偏移或开放季集的规则继续留在 report 中，避免过度匹配。
+// 带正则、回溯引用或 EP 偏移的规则继续拒绝，避免过度匹配。
+// 开放规则只允许从人工确认的 auto-match-draft.txt 发布，不由自动候选生成。
 function parseSafeSeasonCandidate(raw) {
   const arrowIndex = String(raw || '').indexOf('=>');
-  if (arrowIndex === -1) return null;
+  if (arrowIndex === -1) return { rule: null, reason: '缺少 => 分隔符' };
   const left = String(raw).slice(0, arrowIndex).trim();
   let right = String(raw).slice(arrowIndex + 2).trim();
-  if (!left || !right) return null;
+  if (!left || !right) return { rule: null, reason: '源或目标为空' };
 
   const modifier = right.search(/\s*(?:&&|<>|>>)/);
-  if (modifier >= 0) return null;
+  if (modifier >= 0) return { rule: null, reason: '包含 MoviePilot 条件或集数偏移，不能直接转换' };
   right = right.replace(/\s*(?:&&|<>|>>)[\s\S]*$/, '').trim();
 
   // 目标侧允许保留 TMDB 标记；其余正则元字符一律视为不安全。
   const stripTmdb = value => value.replace(/\{\[[^\]}]*\]\}/g, '');
-  if (/[\\()[\]{}?*+|^$]/.test(left) || /[\\()[\]{}?*+|^$]/.test(stripTmdb(right))) return null;
-  if (/\\\d/.test(left) || /\\\d/.test(right)) return null;
+  right = stripTmdb(right).replace(/\s+/g, ' ').trim();
+  if (/[\\()[\]{}?*+|^$]/.test(left) || /[\\()[\]{}?*+|^$]/.test(right)) {
+    return { rule: null, reason: '包含正则语法' };
+  }
+  if (/\\\d/.test(left) || /\\\d/.test(right)) return { rule: null, reason: '包含回溯引用' };
 
   const parseSide = value => {
     const match = value.match(/^(.+?)[\s._-]+S(\d{1,2})[\s._-]*E(\d{1,3})\s*$/i);
@@ -384,8 +394,11 @@ function parseSafeSeasonCandidate(raw) {
 
   const source = parseSide(left);
   const target = parseSide(right);
-  if (!source || !target) return null;
-  return `${source.title} S${source.season}E${source.episode}~E${source.episode} -> ${target.title} S${target.season}E${target.episode}~E${target.episode}`;
+  if (!source || !target) return { rule: null, reason: '源或目标不是明确的 SxxEyy 单集规则' };
+  return {
+    rule: `${source.title} S${source.season}E${source.episode}~E${source.episode} -> ${target.title} S${target.season}E${target.episode}~E${target.episode}`,
+    reason: ''
+  };
 }
 
 function buildRuntimeSeasonTable(candidates, verifiedDraft) {
@@ -402,7 +415,8 @@ function buildRuntimeSeasonTable(candidates, verifiedDraft) {
   for (const line of verifiedDraft || []) add(line);
   for (const candidate of candidates || []) {
     const converted = parseSafeSeasonCandidate(candidate.raw);
-    if (converted) add(converted);
+    if (converted.rule) add(converted.rule);
+    else rejected.push({ raw: candidate.raw, reason: converted.reason });
   }
   return { rules, rejected };
 }
@@ -454,9 +468,9 @@ async function main() {
   const draftRules = buildVerifiedDraftRules();
   const runtimeSeason = buildRuntimeSeasonTable(candidates, draftRules.verified);
   const seasonRuntimeLines = [
-    '# danmu_api 远程季集映射表（自动转换的安全有限范围规则）',
+    '# danmu_api 远程季集映射表（人工确认规则 + 自动转换的安全单集规则）',
     `# 生成日期: ${GENERATED_AT} | 生效规则: ${runtimeSeason.rules.length}`,
-    '# 仅包含明确源/目标季集的有限范围规则；不会改写弹幕库自身的偏移功能。',
+    '# 开放规则只来自人工实测清单；自动转换仅接受明确源/目标 SxxEyy 的安全单集规则。',
     '# 本机 AUTO_MATCH_MAPPING_TABLE 优先；匹配过程中只读取本机缓存。',
   ];
   if (runtimeSeason.rules.length > 0) seasonRuntimeLines.push('', ...runtimeSeason.rules);
