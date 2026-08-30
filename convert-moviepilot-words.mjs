@@ -204,7 +204,7 @@ function writeConverterCache(entries) {
 // ================= 裸标题变体 =================
 // match 场景下文件名先被解析为 title+season+year（如 Moving.S01E01.2023 → "Moving"+S1+2023），
 // 带 S01/年份后缀的键会因精确匹配失败而漏映射，裸标题落入聚合搜索后容易错配同年份的
-// 同名/近名词（实测 Moving.S01E01 错配“搬到京都”别名 Moving in Kyoto）。
+// 避免 Moving.S01E01 等短标题命中“搬到京都”一类近名别名。
 // 因此为每个带季/年尾缀的键额外生成剥除后的裸键变体；多键剥出同一裸键但目标不同时
 // 视为歧义跳过（如 Psycho.Detective 2017/2019 两季）；目标本身含季区间（S01-S05）的跳过，
 // 这类目标只适合 search 场景原样使用，不适合作为 match 裸键的落点。
@@ -470,7 +470,7 @@ async function main() {
   const seasonRuntimeLines = [
     '# danmu_api 远程季集映射表（人工确认规则 + 自动转换的安全单集规则）',
     `# 生成日期: ${GENERATED_AT} | 生效规则: ${runtimeSeason.rules.length}`,
-    '# 开放规则只来自人工实测清单；自动转换仅接受明确源/目标 SxxEyy 的安全单集规则。',
+    '# 开放规则只来自人工确认清单；自动转换仅接受明确源/目标 SxxEyy 的安全单集规则。',
     '# 本机 AUTO_MATCH_MAPPING_TABLE 优先；匹配过程中只读取本机缓存。',
   ];
   if (runtimeSeason.rules.length > 0) seasonRuntimeLines.push('', ...runtimeSeason.rules);

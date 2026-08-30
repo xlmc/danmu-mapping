@@ -1,12 +1,10 @@
 # danmu_api 远程季集映射表（人工确认规则 + 自动转换的安全单集规则）
-# 生成日期: 2026-08-30 | 生效规则: 7
-# 开放规则只来自人工实测清单；自动转换仅接受明确源/目标 SxxEyy 的安全单集规则。
+# 生成日期: 2026-08-30 | 生效规则: 5
+# 开放规则只来自人工确认清单；自动转换仅接受明确源/目标 SxxEyy 的安全单集规则。
 # 本机 AUTO_MATCH_MAPPING_TABLE 优先；匹配过程中只读取本机缓存。
 
 Swallowed Star S04E1 -> 吞噬星空 S01E86
 吞噬星空 S04E1 -> 吞噬星空 S01E86
-A Will Eternal S03E1 -> 一念永恒 第3季 S01E1
 一念永恒 S03E1 -> 一念永恒 第3季 S01E1
-A Will Eternal S02E1 -> 一念永恒 第2季 S01E1
 BLEACH Sennen Kessen hen Kashin tan S01E1 -> 死神 千年血战篇-祸进谭- S01E1
 Bleach Thousand Year Blood War S04E1 -> 死神 千年血战篇-祸进谭- S01E1

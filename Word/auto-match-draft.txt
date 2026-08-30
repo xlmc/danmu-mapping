@@ -1,16 +1,11 @@
 # AUTO_MATCH_MAPPING_TABLE 人工确认清单
-# 这些开放规则均来自历史本地实测；从起始集起按相同差值连续映射。
+# 开放规则从起始集起按相同差值连续映射。
 # 自动转换器不会从 MoviePilot 正则或 EP 偏移中生成开放规则。
 
-# Swallowed.Star.S04E01 -> 腾讯《吞噬星空(2020)》第 86 集
 Swallowed Star S04E1 -> 吞噬星空 S01E86
 吞噬星空 S04E1 -> 吞噬星空 S01E86
 
-# 一念永恒的英文/中文分季资源 -> 弹幕库独立季度条目
-A Will Eternal S03E1 -> 一念永恒 第3季 S01E1
 一念永恒 S03E1 -> 一念永恒 第3季 S01E1
-A Will Eternal S02E1 -> 一念永恒 第2季 S01E1
 
-# BLEACH 千年血战篇分季资源 -> 弹幕库独立篇章条目
 BLEACH Sennen Kessen hen Kashin tan S01E1 -> 死神 千年血战篇-祸进谭- S01E1
 Bleach Thousand Year Blood War S04E1 -> 死神 千年血战篇-祸进谭- S01E1

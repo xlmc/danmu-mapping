@@ -21,7 +21,7 @@ TITLE_MAPPING_TABLE_URL=https://cdn.jsdelivr.net/gh/xlmc/danmu-mapping@main/Word
 | 文件 | 用途 |
 |---|---|
 | `Word/2026.txt` | 「原始标题->映射标题」精确映射表,供 `TITLE_MAPPING_TABLE_URL` 拉取;含剥季/剥年后的裸标题变体,保证 match 场景(文件名解析剥离季/年)仍能命中 |
-| `Word/season-candidates.txt` | 远程运行时季集表；包含人工实测的开放规则，以及自动识别的安全单集规则，供 `AUTO_MATCH_MAPPING_TABLE_URL` 拉取 |
+| `Word/season-candidates.txt` | 远程运行时季集表；包含人工确认的开放规则，以及自动识别的安全单集规则，供 `AUTO_MATCH_MAPPING_TABLE_URL` 拉取 |
 | `Word/auto-match-draft.txt` | 人工确认清单；允许开放规则或等长有限范围，非注释规则会进入运行时季集表 |
 
 `2026.txt` 与远程 `season-candidates.txt` 都来自同一批 MoviePilot 规则，但按规则能力分类生成。运行时采用成功即停止：标题缓存实际匹配成功后不再尝试季集缓存；标题失败时再尝试标题+季集组合及季集缓存。两个表允许同源键并存，只有实际匹配成功的路径才会终止后续尝试。
