@@ -23,7 +23,7 @@ const GENERATED_AT = new Date().toISOString().slice(0, 10);
 
 // 增量转换缓存：首次全量转换，后续仅重新转换内容发生变化的源文件。
 // 只要转换脚本/规则逻辑版本改变，就自动放弃旧缓存并重新全量转换。
-const CONVERTER_CACHE_VERSION = '4';
+const CONVERTER_CACHE_VERSION = '9';
 const CONVERTER_CACHE_DIR = path.resolve('Source', '.converter-cache');
 const CONVERTER_MANIFEST = path.join(CONVERTER_CACHE_DIR, 'manifest.json');
 
@@ -337,7 +337,7 @@ function buildVerifiedDraftRules() {
   for (const rawLine of fs.readFileSync(draftPath, 'utf8').split(/\r?\n/)) {
     const line = rawLine.trim();
     if (!line || line.startsWith('#') || line.startsWith('//')) continue;
-    const match = line.match(/^(.+?)\s+S(\d+)E(\d+)(?:~E?(\d+))?\s*->\s*(.+?)\s+S(\d+)E(\d+)(?:~E?(\d+))?(?:\s+@([A-Za-z0-9_-]+))?$/i);
+    const match = line.match(/^(.+?)\s+S(\d+)E(\d+)(?:~E?(\d+))?(?:\s+\{\[\s*(?:group|releasegroup|fansub|fansubgroup|subtitle)\s*=\s*[^\]}]+\]\})?\s*->\s*(.+?)\s+S(\d+)E(\d+)(?:~E?(\d+))?(?:\s+@([A-Za-z0-9_-]+))?$/i);
     if (!match) {
       rejected.push({ line, reason: '规则必须声明明确的源/目标标题、季度和起始集数' });
       continue;
@@ -361,26 +361,145 @@ function buildVerifiedDraftRules() {
 
 // 只有“左右两侧都是字面量、且两侧都包含明确的单集号”的 MP 规则，
 // 才能在不猜测范围和不接管弹幕源偏移的前提下自动转换为有限范围规则。
-// 带正则、回溯引用或 EP 偏移的规则继续拒绝，避免过度匹配。
+//
+// MoviePilot 的一部分安全单集规则会把发布组写成正则断言，例如：
+//   (?<=ANi.*?) Foo S01E01 => Bar S01E02
+//   Foo S01E01(?=.*ADWeb) => Bar S01E03
+// 这两种断言只是在完整文件名上确认“发布组出现”，可以编译为
+// danmu_api 能识别的 `{[group=ANi]}` 源标记；其余复杂正则、回溯引用和
+// EP 偏移继续拒绝，避免转换器猜错范围或把普通规则误当成分组规则。
 // 开放规则只允许从人工确认的 auto-match-draft.txt 发布，不由自动候选生成。
+
+function findRegexAssertionEnd(text, start) {
+  let depth = 0;
+  for (let i = start; i < text.length; i++) {
+    if (text[i] === '\\') { i++; continue; }
+    if (text[i] === '(') depth++;
+    else if (text[i] === ')' && --depth === 0) return i + 1;
+  }
+  return -1;
+}
+
+function isReleaseGroupToken(value) {
+  const token = String(value || '').trim();
+  if (!token || token.length > 64 || /^(?:19|20)\d{2}$/.test(token) || /^\d+$/.test(token)) return false;
+  if (/^(?:w|W|d|D|s|S|p|P|and|or)$/i.test(token)) return false;
+  if (/^(?:1080p|2160p|720p|480p|2024|2025|2026)$/i.test(token)) return false;
+  // Quality, codec, audio, subtitle and platform tags are filename noise;
+  // treating them as a release group would make a conditional rule depend on
+  // metadata that the danmu_api parser intentionally discards.
+  if (/^(?:\d{3,4}p|4k|8k|hdr|dv|dolby[ ._-]*vision|web[- .]?dl|web[- .]?rip|bluray|blu[- .]?ray|bdrip|hdtv|dvdrip|remux|hd|fhd|uhd|x26[45]|h[ .]?26[45]|hevc|avc|av1|10bit|8bit|hi10p|ma10p|aac|ac3|ddp|dts|flac|truehd|atmos|dd|5[.]1|7[.]1|2[.]0|baha|chs|cht|gb|big5|中字|国配|中配|日配|粤语|原声|无修|未删减|完整版|臻彩|真彩|qq|tencent|qiyi|iqiyi|imgo|mango|youku|bilibili1?|migu|renren|hanjutv|sohu|leshi|xigua|maiduidui|aiyifan|hongguo|dandan|bahamut|animeko|custom)$/i.test(token)) return false;
+  // A group token must contain a letter/CJK character; punctuation-only
+  // regex fragments such as `.*` and escaped classes are not identifiers.
+  return /[\p{L}]/u.test(token);
+}
+
+function isReleaseGroupConditionNoise(value) {
+  const token = String(value || '').trim();
+  if (!token) return true;
+  return /^(?:\d{3,4}p|4k|8k|hdr|dv|dolby[ ._-]*vision|web[- .]?(?:dl|rip)|bluray|blu[- .]?ray|bdrip|hdtv|dvdrip|remux|hd|fhd|uhd|x26[45]|h[ .]?26[45]|hevc|avc|av1|10bit|8bit|hi10p|ma10p|aac|ac3|ddp|dts|flac|truehd|atmos|dd|chs|cht|gb|big5|baha|中字|国配|中配|日配|粤语|原声|无修|未删减|完整版|臻彩|真彩|qq|tencent|qiyi|iqiyi|imgo|mango|youku|bilibili1?|migu|renren|hanjutv|sohu|leshi|xigua|maiduidui|aiyifan|hongguo|dandan|bahamut|animeko|custom)$/i.test(token);
+}
+
+function extractGroupTokens(assertionBody) {
+  const tokens = [];
+  let unsupported = false;
+  const body = String(assertionBody || '');
+  const candidates = body.match(/[\p{L}\p{N}][\p{L}\p{N}_-]{0,63}/gu) || [];
+  for (const token of candidates) {
+    if (isReleaseGroupToken(token)) {
+      if (!tokens.includes(token)) tokens.push(token);
+    } else if (!isReleaseGroupConditionNoise(token)) {
+      unsupported = true;
+    }
+  }
+  // Literal dotted/space-separated phrases are much more likely to be a
+  // title/date condition than a release group (for example
+  // `(?=.*Oshi.no.Ko)`). Keep the converter conservative unless the
+  // expression is an explicit alternative or carries a familiar group hint.
+  if (/[.]\s*(?![*+?])/.test(body)) unsupported = true;
+  if (candidates.length > 1
+      && !candidates.some(token => /(?:web|studio|house|subs?|raw|字幕|组|ani|frog)/i.test(token))) {
+    unsupported = true;
+  }
+  // A boundary/character-class assertion (for example `(?<=\\W_)`) has no
+  // literal group token and must not be widened into a generic rule.
+  if (candidates.length === 0 && /\\/.test(body)) unsupported = true;
+  return { tokens, unsupported };
+}
+
+function extractSourceReleaseGroups(value) {
+  let text = String(value || '').trim();
+  const groups = [];
+  let unsupported = false;
+
+  // Accept an already-compiled marker as input too. This makes the converter
+  // idempotent when a generated table is fed back into a local conversion.
+  text = text.replace(/\{\[\s*(?:group|releasegroup|fansub|fansubgroup|subtitle)\s*=\s*([^\]}]+)\]\}/gi, (_match, value) => {
+    for (const token of String(value).split(/[|,;]/).map(item => item.trim())) {
+      if (isReleaseGroupToken(token) && !groups.includes(token)) groups.push(token);
+    }
+    return ' ';
+  });
+
+  // Remove inline/prefix lookaround assertions while retaining only the
+  // explicit literal tokens inside them. Balanced scanning handles nested
+  // forms such as `(?<=(VCB-Studio|ANi).*?)`.
+  let output = '';
+  for (let i = 0; i < text.length;) {
+    if (text[i] === '(' && text[i + 1] === '?') {
+      const kind = text.slice(i + 2, i + 4);
+      const isLookaround = kind === '<=';
+      if (isLookaround || text.slice(i + 2, i + 3) === '=') {
+        const end = findRegexAssertionEnd(text, i);
+        if (end > i) {
+          // `(?<=` is four characters, while `(?=` is three. Start the
+          // assertion body after the complete operator so `=` is not
+          // accidentally treated as part of the condition.
+          const prefixLength = kind.startsWith('<') ? 4 : 3;
+          const body = text.slice(i + prefixLength, end - 1);
+          const extracted = extractGroupTokens(body);
+          unsupported ||= extracted.unsupported;
+          for (const token of extracted.tokens) {
+            if (!groups.includes(token)) groups.push(token);
+          }
+          i = end;
+          continue;
+        }
+      }
+    }
+    output += text[i++];
+  }
+
+  // `(?i)` is only a case-insensitive flag, not a group condition.
+  output = output.replace(/\(\?[im s-]+\)/gi, ' ');
+  return { text: output.replace(/\s+/g, ' ').trim(), groups, unsupported };
+}
+
+function groupMarker(group) {
+  const value = String(group || '').trim().replace(/[\]};]/g, '');
+  return value ? ` {[group=${value}]}` : '';
+}
+
 function parseSafeSeasonCandidate(raw) {
   const arrowIndex = String(raw || '').indexOf('=>');
-  if (arrowIndex === -1) return { rule: null, reason: '缺少 => 分隔符' };
-  const left = String(raw).slice(0, arrowIndex).trim();
+  if (arrowIndex === -1) return { rules: [], rule: null, reason: '缺少 => 分隔符' };
+  const sourceResult = extractSourceReleaseGroups(String(raw).slice(0, arrowIndex));
+  const left = sourceResult.text;
   let right = String(raw).slice(arrowIndex + 2).trim();
-  if (!left || !right) return { rule: null, reason: '源或目标为空' };
+  if (!left || !right) return { rules: [], rule: null, reason: '源或目标为空' };
+  if (sourceResult.unsupported) return { rules: [], rule: null, reason: '包含无法安全编译的源侧条件' };
 
   const modifier = right.search(/\s*(?:&&|<>|>>)/);
-  if (modifier >= 0) return { rule: null, reason: '包含 MoviePilot 条件或集数偏移，不能直接转换' };
+  if (modifier >= 0) return { rules: [], rule: null, reason: '包含 MoviePilot 条件或集数偏移，不能直接转换' };
   right = right.replace(/\s*(?:&&|<>|>>)[\s\S]*$/, '').trim();
 
-  // 目标侧允许保留 TMDB 标记；其余正则元字符一律视为不安全。
-  const stripTmdb = value => value.replace(/\{\[[^\]}]*\]\}/g, '');
-  right = stripTmdb(right).replace(/\s+/g, ' ').trim();
+  // 目标侧允许 TMDB/身份标记；这些字段由 danmu_api 作为候选限定，
+  // 不应阻止安全的季集键转换。
+  right = right.replace(/\{\[[^\]}]*\]\}/g, '').replace(/\s+/g, ' ').trim();
   if (/[\\()[\]{}?*+|^$]/.test(left) || /[\\()[\]{}?*+|^$]/.test(right)) {
-    return { rule: null, reason: '包含正则语法' };
+    return { rules: [], rule: null, reason: '包含未识别的正则语法' };
   }
-  if (/\\\d/.test(left) || /\\\d/.test(right)) return { rule: null, reason: '包含回溯引用' };
+  if (/\\\d/.test(left) || /\\\d/.test(right)) return { rules: [], rule: null, reason: '包含回溯引用' };
 
   const parseSide = value => {
     const match = value.match(/^(.+?)[\s._-]+S(\d{1,2})[\s._-]*E(\d{1,3})\s*$/i);
@@ -394,11 +513,13 @@ function parseSafeSeasonCandidate(raw) {
 
   const source = parseSide(left);
   const target = parseSide(right);
-  if (!source || !target) return { rule: null, reason: '源或目标不是明确的 SxxEyy 单集规则' };
-  return {
-    rule: `${source.title} S${source.season}E${source.episode}~E${source.episode} -> ${target.title} S${target.season}E${target.episode}~E${target.episode}`,
-    reason: ''
-  };
+  if (!source || !target) return { rules: [], rule: null, reason: '源或目标不是明确的 SxxEyy 单集规则' };
+
+  const base = `${source.title} S${source.season}E${source.episode}~E${source.episode}`;
+  const suffix = ` -> ${target.title} S${target.season}E${target.episode}~E${target.episode}`;
+  const rules = (sourceResult.groups.length ? sourceResult.groups : [''])
+    .map(group => `${base}${groupMarker(group)}${suffix}`);
+  return { rules, rule: rules[0] || null, reason: '' };
 }
 
 function buildRuntimeSeasonTable(candidates, verifiedDraft) {
@@ -415,8 +536,12 @@ function buildRuntimeSeasonTable(candidates, verifiedDraft) {
   for (const line of verifiedDraft || []) add(line);
   for (const candidate of candidates || []) {
     const converted = parseSafeSeasonCandidate(candidate.raw);
-    if (converted.rule) add(converted.rule);
-    else rejected.push({ raw: candidate.raw, reason: converted.reason });
+    const convertedRules = converted.rules || (converted.rule ? [converted.rule] : []);
+    if (convertedRules.length > 0) {
+      for (const rule of convertedRules) add(rule);
+    } else {
+      rejected.push({ raw: candidate.raw, reason: converted.reason });
+    }
   }
   return { rules, rejected };
 }
