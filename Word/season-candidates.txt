@@ -1,5 +1,5 @@
 # danmu_api 远程季集映射表（人工确认规则 + 自动转换的安全单集规则）
-# 生成日期: 2026-10-02 | 生效规则: 5
+# 生成日期: 2026-10-02 | 生效规则: 93
 # 开放规则只来自人工确认清单；自动转换仅接受明确源/目标 SxxEyy 的安全单集规则。
 # 本机 AUTO_MATCH_MAPPING_TABLE 优先；匹配过程中只读取本机缓存。
 
@@ -8,3 +8,91 @@ Swallowed Star S04E1 -> 吞噬星空 S01E86
 一念永恒 S03E1 -> 一念永恒 第3季 S01E1
 BLEACH Sennen Kessen hen Kashin tan S01E1 -> 死神 千年血战篇-祸进谭- S01E1
 Bleach Thousand Year Blood War S04E1 -> 死神 千年血战篇-祸进谭- S01E1
+神墓 S02E1~E27 -> 神墓 辰南觉醒 S01E17~E43 @youku
+神墓 S03E1~E52 -> 神墓 年番 S01E1~E52 @youku
+永生 S02E1~E12 -> 永生 S01E13~E24 @bilibili
+永生 S03E1~E16 -> 永生 S01E25~E40 @bilibili
+永生 S04E1~E16 -> 永生 S01E41~E56 @bilibili
+一念永恒 S02E1~E54 -> 一念永恒 第2季 S01E1~E54 @tencent
+一念永恒 S03E1~E59 -> 一念永恒 第3季 S01E1~E59 @tencent
+一念永恒 S01E53~E106 -> 一念永恒 第2季 S01E1~E54 @tencent
+一念永恒 S01E107~E165 -> 一念永恒 第3季 S01E1~E59 @tencent
+诛仙 S02E1~E26 -> 诛仙 第2季 S01E1~E26 @tencent
+诛仙 S03E1~E26 -> 诛仙 第3季 S01E1~E26 @tencent
+诛仙 S04E1~E9 -> 诛仙 最终季 S01E1~E9 @tencent
+诛仙 S01E27~E52 {[group=ADWeb]} -> 诛仙 第2季 S01E1~E26 @tencent
+一念永恒 S3E1 -> 一念永恒 第3季 S1E1
+A.Will.Eternal S3E1 -> 一念永恒 第3季 S1E1
+Yi.Nian.Yong.Heng S3E1 -> 一念永恒 第3季 S1E1
+A Will Eternal S3E1 -> 一念永恒 第3季 S1E1
+Yi Nian Yong Heng S3E1 -> 一念永恒 第3季 S1E1
+神墓 S2E1~E27 -> 神墓 辰南觉醒 S1E17~E43 @youku
+Tomb.of.Fallen.Gods S2E1~E27 -> 神墓 辰南觉醒 S1E17~E43 @youku
+Shen.Mu S2E1~E27 -> 神墓 辰南觉醒 S1E17~E43 @youku
+Tomb of Fallen Gods S2E1~E27 -> 神墓 辰南觉醒 S1E17~E43 @youku
+Shen Mu S2E1~E27 -> 神墓 辰南觉醒 S1E17~E43 @youku
+神墓 S3E1~E52 -> 神墓 年番 S1E1~E52 @youku
+Tomb.of.Fallen.Gods S3E1~E52 -> 神墓 年番 S1E1~E52 @youku
+Shen.Mu S3E1~E52 -> 神墓 年番 S1E1~E52 @youku
+Tomb of Fallen Gods S3E1~E52 -> 神墓 年番 S1E1~E52 @youku
+Shen Mu S3E1~E52 -> 神墓 年番 S1E1~E52 @youku
+永生 S2E1~E12 -> 永生 S1E13~E24 @bilibili
+IMMORTALITY S2E1~E12 -> 永生 S1E13~E24 @bilibili
+Yong.Sheng S2E1~E12 -> 永生 S1E13~E24 @bilibili
+Yong Sheng S2E1~E12 -> 永生 S1E13~E24 @bilibili
+永生 S3E1~E16 -> 永生 S1E25~E40 @bilibili
+IMMORTALITY S3E1~E16 -> 永生 S1E25~E40 @bilibili
+Yong.Sheng S3E1~E16 -> 永生 S1E25~E40 @bilibili
+Yong Sheng S3E1~E16 -> 永生 S1E25~E40 @bilibili
+永生 S4E1~E16 -> 永生 S1E41~E56 @bilibili
+IMMORTALITY S4E1~E16 -> 永生 S1E41~E56 @bilibili
+Yong.Sheng S4E1~E16 -> 永生 S1E41~E56 @bilibili
+Yong Sheng S4E1~E16 -> 永生 S1E41~E56 @bilibili
+一念永恒 S2E1~E54 -> 一念永恒 第2季 S1E1~E54 @tencent
+A.Will.Eternal S2E1~E54 -> 一念永恒 第2季 S1E1~E54 @tencent
+Yi.Nian.Yong.Heng S2E1~E54 -> 一念永恒 第2季 S1E1~E54 @tencent
+A Will Eternal S2E1~E54 -> 一念永恒 第2季 S1E1~E54 @tencent
+Yi Nian Yong Heng S2E1~E54 -> 一念永恒 第2季 S1E1~E54 @tencent
+一念永恒 S3E1~E59 -> 一念永恒 第3季 S1E1~E59 @tencent
+A.Will.Eternal S3E1~E59 -> 一念永恒 第3季 S1E1~E59 @tencent
+Yi.Nian.Yong.Heng S3E1~E59 -> 一念永恒 第3季 S1E1~E59 @tencent
+A Will Eternal S3E1~E59 -> 一念永恒 第3季 S1E1~E59 @tencent
+Yi Nian Yong Heng S3E1~E59 -> 一念永恒 第3季 S1E1~E59 @tencent
+一念永恒 S1E53~E106 -> 一念永恒 第2季 S1E1~E54 @tencent
+A.Will.Eternal S1E53~E106 -> 一念永恒 第2季 S1E1~E54 @tencent
+Yi.Nian.Yong.Heng S1E53~E106 -> 一念永恒 第2季 S1E1~E54 @tencent
+A Will Eternal S1E53~E106 -> 一念永恒 第2季 S1E1~E54 @tencent
+Yi Nian Yong Heng S1E53~E106 -> 一念永恒 第2季 S1E1~E54 @tencent
+一念永恒 S1E107~E165 -> 一念永恒 第3季 S1E1~E59 @tencent
+A.Will.Eternal S1E107~E165 -> 一念永恒 第3季 S1E1~E59 @tencent
+Yi.Nian.Yong.Heng S1E107~E165 -> 一念永恒 第3季 S1E1~E59 @tencent
+A Will Eternal S1E107~E165 -> 一念永恒 第3季 S1E1~E59 @tencent
+Yi Nian Yong Heng S1E107~E165 -> 一念永恒 第3季 S1E1~E59 @tencent
+诛仙 S2E1~E26 -> 诛仙 第2季 S1E1~E26 @tencent
+Jade.Dynasty S2E1~E26 -> 诛仙 第2季 S1E1~E26 @tencent
+Zhu.Xian S2E1~E26 -> 诛仙 第2季 S1E1~E26 @tencent
+诛仙动画 S2E1~E26 -> 诛仙 第2季 S1E1~E26 @tencent
+Jade Dynasty Ⅱ S2E1~E26 -> 诛仙 第2季 S1E1~E26 @tencent
+Jade Dynasty S2E1~E26 -> 诛仙 第2季 S1E1~E26 @tencent
+Zhu Xian S2E1~E26 -> 诛仙 第2季 S1E1~E26 @tencent
+诛仙 S3E1~E26 -> 诛仙 第3季 S1E1~E26 @tencent
+Jade.Dynasty S3E1~E26 -> 诛仙 第3季 S1E1~E26 @tencent
+Zhu.Xian S3E1~E26 -> 诛仙 第3季 S1E1~E26 @tencent
+诛仙动画 S3E1~E26 -> 诛仙 第3季 S1E1~E26 @tencent
+Jade Dynasty Ⅱ S3E1~E26 -> 诛仙 第3季 S1E1~E26 @tencent
+Jade Dynasty S3E1~E26 -> 诛仙 第3季 S1E1~E26 @tencent
+Zhu Xian S3E1~E26 -> 诛仙 第3季 S1E1~E26 @tencent
+诛仙 S4E1~E9 -> 诛仙 最终季 S1E1~E9 @tencent
+Jade.Dynasty S4E1~E9 -> 诛仙 最终季 S1E1~E9 @tencent
+Zhu.Xian S4E1~E9 -> 诛仙 最终季 S1E1~E9 @tencent
+诛仙动画 S4E1~E9 -> 诛仙 最终季 S1E1~E9 @tencent
+Jade Dynasty Ⅱ S4E1~E9 -> 诛仙 最终季 S1E1~E9 @tencent
+Jade Dynasty S4E1~E9 -> 诛仙 最终季 S1E1~E9 @tencent
+Zhu Xian S4E1~E9 -> 诛仙 最终季 S1E1~E9 @tencent
+诛仙 S1E27~E52 {[group=ADWeb]} -> 诛仙 第2季 S1E1~E26 @tencent
+Jade.Dynasty S1E27~E52 {[group=ADWeb]} -> 诛仙 第2季 S1E1~E26 @tencent
+Zhu.Xian S1E27~E52 {[group=ADWeb]} -> 诛仙 第2季 S1E1~E26 @tencent
+诛仙动画 S1E27~E52 {[group=ADWeb]} -> 诛仙 第2季 S1E1~E26 @tencent
+Jade Dynasty Ⅱ S1E27~E52 {[group=ADWeb]} -> 诛仙 第2季 S1E1~E26 @tencent
+Jade Dynasty S1E27~E52 {[group=ADWeb]} -> 诛仙 第2季 S1E1~E26 @tencent
+Zhu Xian S1E27~E52 {[group=ADWeb]} -> 诛仙 第2季 S1E1~E26 @tencent

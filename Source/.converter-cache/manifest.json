@@ -1,10 +1,12 @@
 {
-  "version": "9",
+  "version": "12",
   "sources": {
-    "upstream/src1_general.txt": "8f26e716c072e0b56e83be8d46f97bc7e5e80ee83be7fe7f7795670e735ea870",
-    "upstream/src2_2025.01.txt": "efc7c7d2e1ee5052fb7cbca87953cfb8921b346711e328661ee7b5dc3be3cf70",
-    "upstream/src3_2026.txt": "cf830c9d65e56b0b884d3b913396c321a39924edafefe61327ebe5fa0f105a02",
-    "upstream/src4_2026-tmdb.txt": "e654197d30e7e9da6d6f5a832b99663da616fab96cc3dbbc4a55789c396e175b",
-    "upstream/src5_anime.txt": "a532a0ace2e9ea63ddfab6e5f5fe062c162ff47b1cc6a50fd00661e503968cc9"
+    "Word/my-words.txt": "2d0d03e1fa56ca077b70f5ab5c0e476a659904b199193e82743bcee5cb7f537c",
+    "upstream/src1_general.txt": "100af099766cfba1eb27216a7c9102cc30d765c1101c2cc881f2d3285c79ee37",
+    "upstream/src2_2025.01.txt": "8e98fa0e0c25a9bcbf0cc629290128ac09a2ee49ca06d5ad5ba2fa124c901d26",
+    "upstream/src3_2026.txt": "c9ee37532f5056e97f2e92876888fcb3d4468ffa4dd4f153f400f9fcc523d220",
+    "upstream/src4_2026-tmdb.txt": "2fd812349c3a1d474cbd028b9e7e3ae0cf1bd72e829798d32a95768e81fcd18a",
+    "upstream/src5_anime.txt": "f27ac2708a61590e5924efc7f3383e4b1a623afc8dc61c663373961b6af8b068",
+    "upstream/src6_other.txt": "c750526e276f019d6ab5843c2fd8eea3635c4292817770f6700ba4b6737c08b8"
   }
 }

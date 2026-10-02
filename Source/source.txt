@@ -10,3 +10,4 @@ https://raw.githubusercontent.com/Putarku/MoviePilot-Help/main/Words/2025.01.txt
 https://raw.githubusercontent.com/Putarku/MoviePilot-Help/refs/heads/main/Words/2026.txt
 https://raw.githubusercontent.com/Putarku/MoviePilot-Help/main/Words/2026-tmdb.txt
 https://raw.githubusercontent.com/Putarku/MoviePilot-Help/refs/heads/main/Words/anime.txt
+https://raw.githubusercontent.com/Putarku/MoviePilot-Help/main/Words/other.txt

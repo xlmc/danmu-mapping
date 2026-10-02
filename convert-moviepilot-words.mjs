@@ -12,18 +12,20 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
+import { collapseTitleAliases, expandRuleAliases, findRuleConflicts, parseRuntimeRule, proposeMoviePilotRule } from './rule-tools.mjs';
 
 // ================= 配置 =================
 const OUT_DIR = (() => {
   const i = process.argv.indexOf('--out');
   return i > 0 && process.argv[i + 1] ? process.argv[i + 1] : '.';
 })();
-const SOURCES = process.argv.slice(2).filter((a, i, arr) => a !== '--out' && arr[i - 1] !== '--out');
+const SOURCES = process.argv.slice(2).filter((a, i, arr) => a !== '--out' && arr[i - 1] !== '--out')
+  .sort((a, b) => Number(path.basename(b) === 'my-words.txt') - Number(path.basename(a) === 'my-words.txt'));
 const GENERATED_AT = new Date().toISOString().slice(0, 10);
 
 // 增量转换缓存：首次全量转换，后续仅重新转换内容发生变化的源文件。
 // 只要转换脚本/规则逻辑版本改变，就自动放弃旧缓存并重新全量转换。
-const CONVERTER_CACHE_VERSION = '9';
+const CONVERTER_CACHE_VERSION = '12';
 const CONVERTER_CACHE_DIR = path.resolve('Source', '.converter-cache');
 const CONVERTER_MANIFEST = path.join(CONVERTER_CACHE_DIR, 'manifest.json');
 
@@ -62,7 +64,7 @@ async function readSource(src) {
   return { name: src, text: fs.readFileSync(src, 'utf-8') };
 }
 
-function convertLine(rawLine, stats, mappings, candidates) {
+function convertLine(rawLine, stats, mappings, candidates, conflicts) {
   const line = rawLine.trim();
   if (!line || line.startsWith('#') || line.startsWith('//')) return;
 
@@ -113,14 +115,6 @@ function convertLine(rawLine, stats, mappings, candidates) {
   // 目标清理为最短通用形态（去年份/季区间/尾缀字母），适配多源包含匹配
   right = cleanTargetTitle(right);
 
-  // 锚定残留：目标为纯 ASCII 且是左侧的子串（如 Pokemon.Best.Wishes.2010->Pokemon、
-  // OVERLORD II->OVERLORD），这是 TMDB 锚点剥离后的残留词，对弹幕源搜索无意义，
-  // 罗马数字季标归一类的规则也在此列（正确做法是走 AUTO_MATCH 季路由）
-  if (/^[\x20-\x7E]+$/.test(right) && left.toLowerCase().includes(right.toLowerCase())) {
-    stats.anchorResidue++;
-    return;
-  }
-
   const leftSeason = left.match(/[\s._-](S\d{1,2})\b/i)?.[1]?.toUpperCase();
   const plainLeft = !REGEX_META.test(left);
 
@@ -137,6 +131,13 @@ function convertLine(rawLine, stats, mappings, candidates) {
     return;
   }
 
+  // 简单 ASCII 锚定残留仍过滤，但必须先收集季集/正则/偏移候选，
+  // 否则 IMMORTALITY 等国漫英文规则会在报告生成前丢失。
+  if (/^[\x20-\x7E]+$/.test(right) && left.toLowerCase().includes(right.toLowerCase())) {
+    stats.anchorResidue++;
+    return;
+  }
+
   // 分类二：清洗后右侧为空 = 纯 TMDB 锚定规则（无可用的标题信息）
   if (!right) { stats.anchorOnly++; return; }
 
@@ -144,7 +145,10 @@ function convertLine(rawLine, stats, mappings, candidates) {
   if (right === left) { stats.identity++; return; }
 
   // 正常标题映射（同一左侧只保留首条，重复的记数）
-  if (mappings.has(left)) { stats.duplicates++; return; }
+  if (mappings.has(left)) {
+    if (mappings.get(left) !== right) conflicts.push({ key: left, kept: mappings.get(left), rejected: right, raw: line });
+    stats.duplicates++; return;
+  }
   mappings.set(left, right);
   stats.mappings++;
 }
@@ -190,6 +194,7 @@ function writeConverterCache(entries) {
       mappings: entry.mappings,
       candidates: entry.candidates,
       stats: entry.stats,
+      conflicts: entry.conflicts,
     }));
   }
   // 清理已从 Source 地址列表移除的旧缓存文件，避免增量合并残留旧规则。
@@ -337,6 +342,10 @@ function buildVerifiedDraftRules() {
   for (const rawLine of fs.readFileSync(draftPath, 'utf8').split(/\r?\n/)) {
     const line = rawLine.trim();
     if (!line || line.startsWith('#') || line.startsWith('//')) continue;
+    if (!parseRuntimeRule(line)) {
+      rejected.push({ line, reason: '源/目标季集、发布组或范围格式无效' });
+      continue;
+    }
     const match = line.match(/^(.+?)\s+S(\d+)E(\d+)(?:~E?(\d+))?(?:\s+\{\[\s*(?:group|releasegroup|fansub|fansubgroup|subtitle)\s*=\s*[^\]}]+\]\})?\s*->\s*(.+?)\s+S(\d+)E(\d+)(?:~E?(\d+))?(?:\s+@([A-Za-z0-9_-]+))?$/i);
     if (!match) {
       rejected.push({ line, reason: '规则必须声明明确的源/目标标题、季度和起始集数' });
@@ -540,7 +549,7 @@ function buildRuntimeSeasonTable(candidates, verifiedDraft) {
     if (convertedRules.length > 0) {
       for (const rule of convertedRules) add(rule);
     } else {
-      rejected.push({ raw: candidate.raw, reason: converted.reason });
+      rejected.push({ source: candidate.source, raw: candidate.raw, reason: converted.reason });
     }
   }
   return { rules, rejected };
@@ -550,6 +559,8 @@ async function main() {
   const stats = { mappings: 0, seasonCandidates: 0, anchorOnly: 0, identity: 0, duplicates: 0, bareVariants: 0, bareAmbiguous: 0, seasonKeys: 0, seasonKeyAmbiguous: 0, noise: 0, anchorResidue: 0 };
   const mappings = new Map();
   const candidates = [];
+  const titleConflicts = [];
+  const mappingSources = new Map();
 
   const cacheEntries = [];
   for (const src of SOURCES) {
@@ -557,27 +568,36 @@ async function main() {
     const cached = readConverterCache(name, text);
     let entry;
     if (cached) {
-      entry = { source: name, text, mappings: cached.mappings, candidates: cached.candidates, stats: cached.stats };
+      entry = { source: name, text, mappings: cached.mappings, candidates: cached.candidates, stats: cached.stats, conflicts: cached.conflicts || [] };
       console.log(`复用缓存: ${name}`);
     } else {
       const sourceStats = emptyStats();
       const sourceMappings = new Map();
       const sourceCandidates = [];
-      for (const line of text.split(/\r?\n/)) convertLine(line, sourceStats, sourceMappings, sourceCandidates);
-      entry = { source: name, text, mappings: [...sourceMappings.entries()], candidates: sourceCandidates, stats: sourceStats };
+      const sourceConflicts = [];
+      for (const line of text.split(/\r?\n/)) convertLine(line, sourceStats, sourceMappings, sourceCandidates, sourceConflicts);
+      entry = { source: name, text, mappings: [...sourceMappings.entries()], candidates: sourceCandidates, stats: sourceStats, conflicts: sourceConflicts };
       console.log(`重新转换: ${name}`);
     }
     cacheEntries.push(entry);
     addStats(stats, entry.stats);
+    titleConflicts.push(...entry.conflicts.map(conflict => ({ ...conflict, source: name })));
     for (const [key, target] of entry.mappings) {
-      if (mappings.has(key)) stats.duplicates++;
-      else mappings.set(key, target);
+      if (mappings.has(key)) {
+        stats.duplicates++;
+        if (mappings.get(key) !== target) titleConflicts.push({ key, kept: mappings.get(key), rejected: target,
+          keptSource: mappingSources.get(key), source: name });
+      } else {
+        mappings.set(key, target);
+        mappingSources.set(key, name);
+      }
     }
-    candidates.push(...entry.candidates);
+    candidates.push(...entry.candidates.map(candidate => ({ ...candidate, source: name })));
   }
   stats.mappings = mappings.size;
   writeConverterCache(cacheEntries);
 
+  collapseTitleAliases(mappings);
   deriveBareKeyVariants(mappings, stats);
   deriveSeasonQualifiedKeys(mappings, stats);
 
@@ -592,6 +612,23 @@ async function main() {
   const mappingText = header + '\n\n' + [...mappings.entries()].map(([k, v]) => `${k}->${v}`).join('\n') + '\n';
   const draftRules = buildVerifiedDraftRules();
   const runtimeSeason = buildRuntimeSeasonTable(candidates, draftRules.verified);
+  runtimeSeason.rules = expandRuleAliases(runtimeSeason.rules, mappings);
+  const seasonConflicts = findRuleConflicts(runtimeSeason.rules);
+  const report = {
+    stats, titleConflicts, seasonConflicts, invalidDraft: draftRules.rejected,
+    pending: runtimeSeason.rejected.map(item => ({ ...item, proposals: proposeMoviePilotRule(item.raw) }))
+  };
+  fs.mkdirSync(OUT_DIR, { recursive: true });
+  fs.writeFileSync(path.join(OUT_DIR, 'conversion-report.json'), JSON.stringify(report, null, 2) + '\n');
+  const summary = [ '# 转换核对报告', '',
+    `标题冲突：${titleConflicts.length}；季集冲突：${seasonConflicts.length}；待核对：${report.pending.length}；无效人工规则：${report.invalidDraft.length}。`, '',
+    '候选偏移仅表达 MoviePilot 原始规则，未验证目标弹幕平台，不能直接发布。详情见 conversion-report.json。', '',
+    ...report.pending.filter(item => item.proposals.length).flatMap(item => [
+      `- 来源：${item.source}`, `  原规则：${item.raw}`,
+      ...item.proposals.map(proposal => `  候选：${proposal.suggestedRule}`)
+    ]) ].join('\n') + '\n';
+  fs.writeFileSync(path.join(OUT_DIR, 'conversion-report.md'), summary);
+  if (seasonConflicts.length || draftRules.rejected.length) throw new Error('人工季集规则无效或存在冲突；运行时表未发布，详情见 conversion-report.json');
   const seasonRuntimeLines = [
     '# danmu_api 远程季集映射表（人工确认规则 + 自动转换的安全单集规则）',
     `# 生成日期: ${GENERATED_AT} | 生效规则: ${runtimeSeason.rules.length}`,
