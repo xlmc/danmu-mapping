@@ -9,3 +9,26 @@ Swallowed Star S04E1 -> 吞噬星空 S01E86
 
 BLEACH Sennen Kessen hen Kashin tan S01E1 -> 死神 千年血战篇-祸进谭- S01E1
 Bleach Thousand Year Blood War S04E1 -> 死神 千年血战篇-祸进谭- S01E1
+
+# 国漫：2026-10-02 用 danmu_api 的源适配器获取真实分集，证据见 Source/guoman-evidence.json。
+# 只声明已确认区间，@平台限定该编号体系。别名由转换器自动展开。
+# 神墓：优酷第一条目合并前两季，年番单独列出。
+神墓 S02E1~E27 -> 神墓 辰南觉醒 S01E17~E43 @youku
+神墓 S03E1~E52 -> 神墓 年番 S01E1~E52 @youku
+
+# 永生：B 站分集标题包含全剧连续编号。
+永生 S02E1~E12 -> 永生 S01E13~E24 @bilibili
+永生 S03E1~E16 -> 永生 S01E25~E40 @bilibili
+永生 S04E1~E16 -> 永生 S01E41~E56 @bilibili
+
+# 一念永恒：腾讯第二季 54 集、第三季 59 集；支持分季与连续编号。
+一念永恒 S02E1~E54 -> 一念永恒 第2季 S01E1~E54 @tencent
+一念永恒 S03E1~E59 -> 一念永恒 第3季 S01E1~E59 @tencent
+一念永恒 S01E53~E106 -> 一念永恒 第2季 S01E1~E54 @tencent
+一念永恒 S01E107~E165 -> 一念永恒 第3季 S01E1~E59 @tencent
+
+# 诛仙：腾讯每季单独列出。连续编号修正仅限上游明确声明的 ADWeb。
+诛仙 S02E1~E26 -> 诛仙 第2季 S01E1~E26 @tencent
+诛仙 S03E1~E26 -> 诛仙 第3季 S01E1~E26 @tencent
+诛仙 S04E1~E9 -> 诛仙 最终季 S01E1~E9 @tencent
+诛仙 S01E27~E52 {[group=ADWeb]} -> 诛仙 第2季 S01E1~E26 @tencent

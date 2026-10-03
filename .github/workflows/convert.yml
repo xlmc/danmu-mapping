@@ -18,8 +18,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Regression tests
+        run: node --test tests/*.test.mjs
+
       - name: Download upstream words from Source/source.txt
         run: |
+          set -euo pipefail
           mkdir -p upstream
           i=0
           while IFS= read -r line || [ -n "$line" ]; do
@@ -30,21 +38,23 @@ jobs:
               owner=${BASH_REMATCH[1]}; repo=${BASH_REMATCH[2]}; ref=${BASH_REMATCH[3]}; dir=${BASH_REMATCH[4]}
               echo "[dir] $owner/$repo@$ref/$dir"
               curl -fsSL "https://api.github.com/repos/$owner/$repo/contents/$dir?ref=$ref" \
-                | jq -r '.[].download_url' \
+                | jq -r '.[] | select(.type == "file" and (.name | endswith(".txt"))) | .download_url' \
                 | while read -r u; do
                     name="$(echo "$dir" | tr '/' '_')_$(basename "$u")"
-                    curl -fsSL -o "upstream/$name" "$u" && echo "downloaded $name"
+                    curl -fsSL -o "upstream/$name" "$u"
+                    echo "downloaded $name"
                   done
             elif [[ "$line" =~ ^https://github\.com/([^/]+)/([^/]+)/blob/([^/]+)/(.+)$ ]]; then
               owner=${BASH_REMATCH[1]}; repo=${BASH_REMATCH[2]}; ref=${BASH_REMATCH[3]}; path=${BASH_REMATCH[4]}
               echo "[file] $owner/$repo@$ref/$path"
               curl -fsSL -o "upstream/src${i}_$(basename "$path")" \
-                "https://raw.githubusercontent.com/$owner/$repo/$ref/$path" \
-                && echo "downloaded src${i}_$(basename "$path")"
+                "https://raw.githubusercontent.com/$owner/$repo/$ref/$path"
+              echo "downloaded src${i}_$(basename "$path")"
             else
               echo "[direct] $line"
               name="src${i}_$(basename "$line" | sed 's/[?#].*//')"
-              curl -fsSL -o "upstream/$name" "$line" && echo "downloaded $name"
+              curl -fsSL -o "upstream/$name" "$line"
+              echo "downloaded $name"
             fi
           done < Source/source.txt
           count=$(ls upstream/*.txt 2>/dev/null | wc -l)
@@ -59,6 +69,20 @@ jobs:
             echo "merging custom words: Word/my-words.txt"
           fi
           node convert-moviepilot-words.mjs "${args[@]}" --out Word
+
+      - name: Conversion review summary
+        if: always()
+        run: |
+          if [ -f Word/conversion-report.md ]; then
+            cat Word/conversion-report.md >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: conversion-review
+          path: Word/conversion-report.*
+          if-no-files-found: ignore
 
       - name: Commit if changed and purge CDN
         run: |

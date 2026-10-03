@@ -1,0 +1,11 @@
+# 国漫标题身份：这里只替换标题，不调整季度或集数。
+# 季集规则由 auto-match-draft.txt 单独声明；不得从英文别名推断集数。
+Tomb.of.Fallen.Gods => 神墓
+Shen.Mu => 神墓
+IMMORTALITY => 永生
+Yong.Sheng => 永生
+A.Will.Eternal => 一念永恒
+Yi.Nian.Yong.Heng => 一念永恒
+Jade.Dynasty => 诛仙
+Zhu.Xian => 诛仙
+诛仙动画 => 诛仙
