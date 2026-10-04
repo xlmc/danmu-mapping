@@ -1,0 +1,11 @@
+{
+  "name": "danmu-rules-upload",
+  "main": "worker.mjs",
+  "compatibility_date": "2026-10-04",
+  "workers_dev": true,
+  "vars": { "UPLOADS_ENABLED": "false" },
+  "ratelimits": [
+    { "name": "IP_LIMITER", "namespace_id": "2026100401", "simple": { "limit": 6, "period": 60 } },
+    { "name": "WRITE_LIMITER", "namespace_id": "2026100402", "simple": { "limit": 12, "period": 60 } }
+  ]
+}

@@ -1,0 +1,56 @@
+name: Review community submissions
+on:
+  workflow_dispatch:
+    inputs:
+      approve_ids:
+        description: '核对实际作品和季集关系后填写提交 ID（逗号分隔；留空只生成报告）'
+        required: false
+        type: string
+      confirm_reviewed:
+        description: '已人工核对目标作品、平台及季集关系'
+        type: boolean
+        default: false
+  schedule:
+    - cron: '30 20 * * *'
+permissions:
+  contents: write
+concurrency:
+  group: community-review
+  cancel-in-progress: false
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node --test tests/*.test.mjs
+      - name: Validate and optionally approve
+        env:
+          APPROVE_IDS: ${{ inputs.approve_ids }}
+          CONFIRM_REVIEWED: ${{ inputs.confirm_reviewed }}
+        run: |
+          args=(--report community-review.json)
+          if [ -n "$APPROVE_IDS" ]; then
+            args+=(--approve "$APPROVE_IDS")
+            if [ "$CONFIRM_REVIEWED" = "true" ]; then args+=(--confirm-reviewed); fi
+          fi
+          node review-community.mjs "${args[@]}"
+          node -e 'const r=JSON.parse(require("fs").readFileSync("community-review.json")); require("fs").appendFileSync(process.env.GITHUB_STEP_SUMMARY, `待核验提交：${r.pending}；本次请求接纳规则：${r.approved}。详细结果见附件。\n`);'
+      - uses: actions/upload-artifact@v4
+        with:
+          name: community-review
+          path: community-review.json
+      - name: Commit reviewed rules
+        run: |
+          if [ -f Word/community/accepted.json ]; then
+            git add Word/community/accepted.json
+            if ! git diff --cached --quiet; then
+              git config user.name 'github-actions[bot]'
+              git config user.email 'github-actions[bot]@users.noreply.github.com'
+              git commit -m 'Accept verified community rules'
+              git pull --rebase origin main
+              git push
+            fi
+          fi

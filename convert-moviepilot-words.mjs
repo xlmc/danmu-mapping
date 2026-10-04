@@ -12,6 +12,8 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
+import { loadCommunity } from './review-community.mjs';
+import { parseSharedRule, validateSubmission } from './community-rules.mjs';
 import { collapseTitleAliases, expandRuleAliases, findRuleConflicts, parseRuntimeRule, proposeMoviePilotRule } from './rule-tools.mjs';
 
 // ================= 配置 =================
@@ -594,6 +596,15 @@ async function main() {
     }
     candidates.push(...entry.candidates.map(candidate => ({ ...candidate, source: name })));
   }
+  const communityRules = loadCommunity(OUT_DIR);
+  const existingTitles = [...mappings.entries()].flatMap(([sourceTitle, targetTitle]) => {
+    try { return [parseSharedRule({kind:'title', line:`${sourceTitle} -> ${targetTitle}`})]; } catch { return []; }
+  });
+  for (const rule of communityRules.filter(r => r.kind === 'title')) {
+    const check = validateSubmission({version:1, rules:[{kind:'title', line:rule.line}]}, existingTitles);
+    if (check.conflict.length || check.invalid.length) throw new Error('社区标题规则与当前上游冲突；运行时表未发布');
+    if (check.accepted.length) { mappings.set(rule.sourceTitle, rule.targetTitle); existingTitles.push(rule); }
+  }
   stats.mappings = mappings.size;
   writeConverterCache(cacheEntries);
 
@@ -611,6 +622,7 @@ async function main() {
 
   const mappingText = header + '\n\n' + [...mappings.entries()].map(([k, v]) => `${k}->${v}`).join('\n') + '\n';
   const draftRules = buildVerifiedDraftRules();
+  draftRules.verified.push(...communityRules.filter(r => r.kind === 'season').map(r => r.line));
   const runtimeSeason = buildRuntimeSeasonTable(candidates, draftRules.verified);
   runtimeSeason.rules = expandRuleAliases(runtimeSeason.rules, mappings);
   const seasonConflicts = findRuleConflicts(runtimeSeason.rules);
