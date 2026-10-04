@@ -104,3 +104,8 @@ test('receiver: all published duplicate/conflict/invalid rules do not cause a wr
   globalThis.fetch=async(url,options)=>{calls++;assert.equal(options.method,'GET');assert.ok(!url.includes('submissions/'));return Response.json({encoding:'base64',content:Buffer.from(url.includes('2026.txt')?'A->B\n':'').toString('base64')});};
   try{const r=await (await worker.fetch(request([title('A -> B'),title('A -> C'),title('X -> X')]),env)).json();assert.equal(r.status,'no_new_rules');assert.equal(r.stored,0);assert.equal(r.conflict.length,2);assert.equal(r.invalid.length,1);assert.equal(calls,2);}finally{globalThis.fetch=original;}
 });
+
+test('receiver: safe GitHub status diagnoses auth and permission failures without upstream body or token',async()=>{
+  const original=globalThis.fetch;
+  try { for(const status of [401,403,404,429,500]) { globalThis.fetch=async()=>new Response('secret-fixture upstream private detail',{status});const response=await worker.fetch(request(),env);assert.equal(response.status,502);const data=await response.json();assert.equal(data.github_status,status);assert.equal(data.error_code,'github_read_baseline');assert.ok(!JSON.stringify(data).includes('secret-fixture'));assert.ok(!JSON.stringify(data).includes('private detail')); } }finally{globalThis.fetch=original;}
+});

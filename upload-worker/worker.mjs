@@ -1,6 +1,7 @@
 import { MAX_BYTES, validateSubmission, parsePublishedRules, submissionId } from '../community-rules.mjs';
 const REPO='xlmc/danmu-mapping';
 const BRANCH='main';
+class GitHubFailure extends Error { constructor(status, stage) { super('GitHub request failed'); this.status=status; this.stage=stage; } }
 const json=(data,status=200,extra={})=>new Response(JSON.stringify(data),{status,headers:{'Content-Type':'application/json; charset=utf-8','Cache-Control':'no-store',...extra}});
 const enabled=env=>env.UPLOADS_ENABLED==='true'&&!!env.GITHUB_TOKEN&&!!env.IP_LIMITER&&!!env.WRITE_LIMITER;
 async function readBody(request) {
@@ -19,7 +20,7 @@ async function github(env,path,method='GET',body) {
 async function baseline(env) {
   const texts=[];
   for(const path of ['Word/2026.txt','Word/season-candidates.txt']) {
-    const r=await github(env,`contents/${path}?ref=${BRANCH}`);if(!r.ok)throw new Error('现有规则读取失败');
+    const r=await github(env,`contents/${path}?ref=${BRANCH}`);if(!r.ok)throw new GitHubFailure(r.status,'read_baseline');
     const file=await r.json();if(file.encoding!=='base64'||typeof file.content!=='string')throw new Error('现有规则格式不支持');
     texts.push(new TextDecoder().decode(Uint8Array.from(atob(file.content.replace(/\s/g,'')),c=>c.charCodeAt(0))));
   }
@@ -53,7 +54,7 @@ export default {
       if(!checked.accepted.length)return json(response);
       const exists=await github(env,`contents/${filePath}?ref=${BRANCH}`);
       if(exists.ok)return json({...response,status:'already_received',stored:0,duplicate:checked.duplicate.length+checked.accepted.length});
-      if(exists.status!==404)throw new Error('无法检查重复提交');
+      if(exists.status!==404)throw new GitHubFailure(exists.status,'check_submission');
       const content=JSON.stringify({version:1,id,status:'pending_review',received_at:new Date().toISOString(),rules:checked.accepted},null,2)+'\n';
       const written=await github(env,`contents/${filePath}`,'PUT',{message:`Collect shared rules ${id.slice(0,12)}`,branch:BRANCH,content:base64(content)});
       if(!written.ok) {
@@ -62,9 +63,9 @@ export default {
           const retry=await github(env,`contents/${filePath}?ref=${BRANCH}`);
           if(retry.ok)return json({...response,status:'already_received',stored:0,duplicate:checked.duplicate.length+checked.accepted.length});
         }
-        throw new Error('规则保存失败');
+        throw new GitHubFailure(written.status,'write_submission');
       }
       return json(response);
-    } catch {return json({success:false,error:'共享服务暂不可用，请稍后重试；本地规则未改变'},502);}
+    } catch (error) {return json({success:false,error:'共享服务暂不可用，请稍后重试；本地规则未改变',error_code:error instanceof GitHubFailure?'github_'+error.stage:'service_unavailable',...(error instanceof GitHubFailure?{github_status:error.status}:{})},502);}
   }
 };
