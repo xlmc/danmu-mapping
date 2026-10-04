@@ -13,7 +13,7 @@ async function readBody(request) {
   return JSON.parse(new TextDecoder('utf-8',{fatal:true}).decode(bytes));
 }
 async function github(env,path,method='GET',body) {
-  return fetch(`https://api.github.com/repos/${REPO}/${path}`,{method,redirect:'error',signal:AbortSignal.timeout(10000),headers:{
+  return fetch(`https://api.github.com/repos/${REPO}/${path}`,{method,redirect:'manual',signal:AbortSignal.timeout(10000),headers:{
     Authorization:`Bearer ${env.GITHUB_TOKEN}`,Accept:'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28','User-Agent':'danmu-rule-submissions',
     ...(body?{'Content-Type':'application/json'}:{})},...(body?{body:JSON.stringify(body)}:{})});
 }
@@ -45,18 +45,20 @@ export default {
     if(!/^application\/json(?:\s*;|$)/i.test(request.headers.get('content-type')||''))return json({success:false,error:'仅接受 JSON'},415);
     let payload;
     try {payload=await readBody(request);validateSubmission(payload);} catch {return json({success:false,error:'上传格式错误或请求过大'},400);}
+    let failureStage='read_baseline';
     try {
-      const checked=validateSubmission(payload,await baseline(env));
-      const id=await submissionId(checked.accepted);
+      const published=await baseline(env);failureStage='validate_rules';
+      const checked=validateSubmission(payload,published);
+      failureStage='hash_submission';const id=await submissionId(checked.accepted);
       const filePath=`Word/submissions/${id}.json`;
       const response={success:true,id:checked.accepted.length?id:null,status:checked.accepted.length?'pending_review':'no_new_rules',stored:checked.accepted.length,
         duplicate:checked.duplicate.length,conflict:checked.conflict,invalid:checked.invalid};
       if(!checked.accepted.length)return json(response);
-      const exists=await github(env,`contents/${filePath}?ref=${BRANCH}`);
+      failureStage='check_submission';const exists=await github(env,`contents/${filePath}?ref=${BRANCH}`);
       if(exists.ok)return json({...response,status:'already_received',stored:0,duplicate:checked.duplicate.length+checked.accepted.length});
       if(exists.status!==404)throw new GitHubFailure(exists.status,'check_submission');
       const content=JSON.stringify({version:1,id,status:'pending_review',received_at:new Date().toISOString(),rules:checked.accepted},null,2)+'\n';
-      const written=await github(env,`contents/${filePath}`,'PUT',{message:`Collect shared rules ${id.slice(0,12)}`,branch:BRANCH,content:base64(content)});
+      failureStage='write_submission';const written=await github(env,`contents/${filePath}`,'PUT',{message:`Collect shared rules ${id.slice(0,12)}`,branch:BRANCH,content:base64(content)});
       if(!written.ok) {
         // A concurrent/retried create must never overwrite an existing file.
         if([409,422].includes(written.status)) {
@@ -66,6 +68,9 @@ export default {
         throw new GitHubFailure(written.status,'write_submission');
       }
       return json(response);
-    } catch (error) {return json({success:false,error:'共享服务暂不可用，请稍后重试；本地规则未改变',error_code:error instanceof GitHubFailure?'github_'+error.stage:'service_unavailable',...(error instanceof GitHubFailure?{github_status:error.status}:{})},502);}
+    } catch (error) {
+      const message=String(error?.message||'').toLowerCase();
+      const hint=message.includes('header')?'request_header_invalid':message.includes('abortsignal')?'timeout_api_unavailable':message.includes('redirect')?'redirect_rejected':message.includes('base64')?'baseline_encoding_invalid':message.includes('fetch')||message.includes('network')?'github_network_failed':'unknown';
+      return json({success:false,failure_stage:failureStage,error_hint:hint,error_type:['TypeError','ReferenceError','SyntaxError','TimeoutError','AbortError','Error'].includes(error?.name)?error.name:'other',error:'共享服务暂不可用，请稍后重试；本地规则未改变',error_code:error instanceof GitHubFailure?'github_'+error.stage:'service_unavailable',...(error instanceof GitHubFailure?{github_status:error.status}:{})},502);}
   }
 };

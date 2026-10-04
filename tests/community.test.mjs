@@ -109,3 +109,9 @@ test('receiver: safe GitHub status diagnoses auth and permission failures withou
   const original=globalThis.fetch;
   try { for(const status of [401,403,404,429,500]) { globalThis.fetch=async()=>new Response('secret-fixture upstream private detail',{status});const response=await worker.fetch(request(),env);assert.equal(response.status,502);const data=await response.json();assert.equal(data.github_status,status);assert.equal(data.error_code,'github_read_baseline');assert.ok(!JSON.stringify(data).includes('secret-fixture'));assert.ok(!JSON.stringify(data).includes('private detail')); } }finally{globalThis.fetch=original;}
 });
+
+test('receiver: CF-compatible manual redirect mode never forwards credentials to another host',async()=>{
+  const original=globalThis.fetch;let calls=0;
+  globalThis.fetch=async(url,options)=>{calls++;assert.equal(options.redirect,'manual');assert.ok(url.startsWith('https://api.github.com/repos/xlmc/danmu-mapping/'));return new Response(null,{status:302,headers:{Location:'https://untrusted.example/token-sink'}});};
+  try{const response=await worker.fetch(request(),env);assert.equal(response.status,502);const data=await response.json();assert.equal(data.github_status,302);assert.equal(data.failure_stage,'read_baseline');assert.equal(calls,1);assert.ok(!JSON.stringify(data).includes('secret-fixture'));assert.ok(!JSON.stringify(data).includes('untrusted.example'));}finally{globalThis.fetch=original;}
+});
