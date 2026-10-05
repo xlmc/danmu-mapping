@@ -1,7 +1,7 @@
 name: Mapping regression tests
 on:
   push:
-    paths: ['*.mjs', 'tests/**', 'Word/my-words.txt', 'Word/auto-match-draft.txt', '.github/workflows/**']
+    paths: ['*.mjs', 'tests/**', 'Source/source.txt', 'Word/auto-match-draft.txt', '.github/workflows/**']
   pull_request:
 jobs:
   test:

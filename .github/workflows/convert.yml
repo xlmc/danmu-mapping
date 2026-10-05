@@ -1,9 +1,9 @@
 name: Convert MoviePilot words
 
 # 定时把上游 MoviePilot 共享识别词转换为 danmu_api 映射表:
-# 按 sources.txt 抓取上游(GitHub 目录页自动全抓/单文件直链)→ convert-moviepilot-words.mjs 转换
+# 按 Source/source.txt 抓取上游(GitHub 目录页自动全抓/单文件直链)→ convert-moviepilot-words.mjs 转换
 # → 有变化则提交 Word/2026.txt 与 season-candidates.txt → purge jsDelivr CDN 缓存
-# 自定义词写在 Word/my-words.txt(MoviePilot 语法),存在时自动并入转换,不会被覆盖
+# 转换前的词表来源地址统一登记在 Source/source.txt
 on:
   schedule:
     - cron: '0 21 * * *' # 每天 UTC 21:00(北京时间 05:00)
@@ -59,15 +59,11 @@ jobs:
           done < Source/source.txt
           count=$(ls upstream/*.txt 2>/dev/null | wc -l)
           echo "total files: $count"
-          [ "$count" -gt 0 ] || { echo "no upstream files downloaded, check sources.txt"; exit 1; }
+          [ "$count" -gt 0 ] || { echo "no upstream files downloaded, check Source/source.txt"; exit 1; }
 
       - name: Convert
         run: |
           args=(upstream/*.txt)
-          if [ -f Word/my-words.txt ]; then
-            args+=("Word/my-words.txt")
-            echo "merging custom words: Word/my-words.txt"
-          fi
           node convert-moviepilot-words.mjs "${args[@]}" --out Word
 
       - name: Conversion review summary

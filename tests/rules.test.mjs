@@ -76,11 +76,11 @@ function conversion(run) {
   } finally { fs.rmSync(dir, { recursive: true, force: true }); }
 }
 
-test('真实入口：人工别名优先，偏移不发布，报告与缓存重跑保持一致', () => conversion((dir, invoke) => {
+test('真实入口：输入顺序决定来源优先级，偏移不发布，报告与缓存重跑保持一致', () => conversion((dir, invoke) => {
   fs.writeFileSync(path.join(dir, 'upstream.txt'), 'Jade.Dynasty => 旧标题\nIMMORTALITY.S01(?=.*E(4[1-9]|5[0-6]).*ADWeb) => IMMORTALITY.S04 && S04 <> 2022 >> EP-40\n');
-  fs.writeFileSync(path.join(dir, 'my-words.txt'), 'Jade.Dynasty => 诛仙\n');
+  fs.writeFileSync(path.join(dir, 'preferred-source.txt'), 'Jade.Dynasty => 诛仙\n');
   fs.writeFileSync(path.join(dir, 'Word/auto-match-draft.txt'), '诛仙 S02E1~E26 -> 诛仙 第2季 S01E1~E26 @tencent\n');
-  const first = invoke(['upstream.txt', 'my-words.txt']);
+  const first = invoke(['preferred-source.txt', 'upstream.txt']);
   assert.equal(first.status, 0, first.stderr);
   const title = fs.readFileSync(path.join(dir, 'Word/2026.txt'), 'utf8');
   const season = fs.readFileSync(path.join(dir, 'Word/season-candidates.txt'), 'utf8');
@@ -91,7 +91,7 @@ test('真实入口：人工别名优先，偏移不发布，报告与缓存重�
   assert.equal(report.titleConflicts.length, 1);
   assert.equal(report.pending[0].source, 'upstream.txt');
   assert.equal(report.pending[0].proposals.length, 1);
-  const second = invoke(['upstream.txt', 'my-words.txt']);
+  const second = invoke(['preferred-source.txt', 'upstream.txt']);
   assert.match(second.stdout, /复用缓存/);
   assert.equal(fs.readFileSync(path.join(dir, 'Word/season-candidates.txt'), 'utf8'), season);
   assert.deepEqual(JSON.parse(fs.readFileSync(path.join(dir, 'Word/conversion-report.json'))), report);

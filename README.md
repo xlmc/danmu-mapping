@@ -66,7 +66,7 @@ node convert-moviepilot-words.mjs <上游词表文件...> --out Word
 
 仓库已配置定时流水线(`.github/workflows/convert.yml`):每天北京时间 05:00 自动读取 `Source/source.txt` 中配置的地址，下载上游词表 → 转换 → 有变化则提交并刷新 jsDelivr CDN；也可在仓库 Actions 页面手动触发。danmu_api 侧不再使用缓存分钟配置：启动后读取本地缓存，每天北京时间 05:30 自动更新，失败最多重试 5 次。
 
-**添加自己的词**:在 `Word/my-words.txt` 按上游语法写(`左侧 => 右侧`)，转换器自动优先合并同名文件，相同键的人工修正覆盖上游；冲突保留在报告中。`Word/auto-match-draft.txt` 维护已确认季集关系，Action 不会改动它。
+**管理词表来源**：转换前的 MoviePilot 词表地址统一登记在 `Source/source.txt`，不再另外自动读取本地自定义标题词表。转换器按传入的来源顺序处理，不给特定文件名额外优先权；来源之间的冲突保留在报告中。`Word/auto-match-draft.txt` 继续维护已确认季集关系，Action 不会改动它。
 
 验证转换器：`node --test tests/*.test.mjs`。四部国漫的实际 `/match` 入口、缓存及源站目录快照回放测试位于配套 danmu_api 仓库的 `danmu_api/guoman-scenarios.test.js`。
 

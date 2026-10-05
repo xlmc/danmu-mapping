@@ -63,7 +63,7 @@ GitHub Actions → Review community submissions → Run workflow：
 审核后可手动运行现有 Convert MoviePilot words，或等待其现有定时任务。
 审核工作流不是自动业务审批，也不立即触发转换。
 
-维护者既有 my-words.txt / auto-match-draft.txt 的优先权不变。
+转换前 MoviePilot 词表地址由 Source/source.txt 管理；auto-match-draft.txt 的既有人工季集核验机制保留。
 社区规则不得覆盖当前不同目标的标题规则。转换发现季集冲突会停止，保留旧运行时表。
 待审核文件不会被转换器读取。重复接纳不会重复增加 accepted.json。
 原始提交保留作审计；已接纳/已发布后报告可能显示 duplicate_only。

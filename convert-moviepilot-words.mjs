@@ -21,8 +21,8 @@ const OUT_DIR = (() => {
   const i = process.argv.indexOf('--out');
   return i > 0 && process.argv[i + 1] ? process.argv[i + 1] : '.';
 })();
-const SOURCES = process.argv.slice(2).filter((a, i, arr) => a !== '--out' && arr[i - 1] !== '--out')
-  .sort((a, b) => Number(path.basename(b) === 'my-words.txt') - Number(path.basename(a) === 'my-words.txt'));
+// Preserve the supplied source order; no filename receives special priority.
+const SOURCES = process.argv.slice(2).filter((a, i, arr) => a !== '--out' && arr[i - 1] !== '--out');
 const GENERATED_AT = new Date().toISOString().slice(0, 10);
 
 // 增量转换缓存：首次全量转换，后续仅重新转换内容发生变化的源文件。
