@@ -1,7 +1,6 @@
 name: Mapping regression tests
 on:
   push:
-    paths: ['*.mjs', 'tests/**', 'Source/source.txt', 'Word/auto-match-draft.txt', '.github/workflows/**']
   pull_request:
 jobs:
   test:
@@ -11,4 +10,5 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - run: node --test tests/*.test.mjs
+      - run: node tools/commit-hygiene.mjs --ci
+      - run: node --test tests/*.test.mjs tools/*.test.mjs

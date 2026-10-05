@@ -54,8 +54,8 @@ test('review: cross-batch cycles in approved registry are rejected',()=>fixture(
 test('converter real CLI excludes pending, includes approved, preserves files on upstream cycle',()=>fixture(async dir=>{
   const root=fileURLToPath(new URL('../',import.meta.url));const source=path.join(dir,'source.txt');fs.writeFileSync(source,'X => Y\n');
   const rules=[title('Alias -> Target'),season('Show S2E1~E2 -> PlatformShow S1E11~E12 @tencent')];const id=await pending(dir,rules);
-  const run=()=>spawnSync(process.execPath,[path.join(root,'convert-moviepilot-words.mjs'),source,'--out',dir],{encoding:'utf8'});
-  assert.equal(run().status,0);assert.ok(!fs.readFileSync(path.join(dir,'2026.txt'),'utf8').includes('Alias'));
+  const run=()=>spawnSync(process.execPath,[path.join(root,'convert-moviepilot-words.mjs'),source,'--out',dir],{cwd:dir,encoding:'utf8'});
+  assert.equal(run().status,0);assert.ok(fs.existsSync(path.join(dir,'Source/.converter-cache/manifest.json')));assert.ok(!fs.readFileSync(path.join(dir,'2026.txt'),'utf8').includes('Alias'));
   reviewCommunity(dir,[id],true);const res=run();assert.equal(res.status,0,res.stderr);
   const text=fs.readFileSync(path.join(dir,'2026.txt'),'utf8');assert.match(text,/Alias->Target/);
   assert.match(fs.readFileSync(path.join(dir,'season-candidates.txt'),'utf8'),/PlatformShow/);
