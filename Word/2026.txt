@@ -1,18 +1,9 @@
 # danmu_api 剧名映射表（由 MoviePilot 共享识别词自动转换）
-# 转换日期: 2026-10-04 | 规则数: 320（原始 200 + 裸标题变体 107 + 剧名×季组合键 13）
+# 转换日期: 2026-10-06 | 规则数: 304（原始 191 + 裸标题变体 100 + 剧名×季组合键 13）
 # 用法: danmu_api 环境变量 TITLE_MAPPING_TABLE_URL 填本文件的 raw 直链
 # 键形态：完整资源名 / 裸剧名 / 裸剧名 Sxx 三类，分别覆盖手动搜索与自动匹配场景
 # 季/集修正类规则不在此文件，见 season-candidates.txt（运行时表）
 
-Tomb.of.Fallen.Gods->神墓
-Shen.Mu->神墓
-IMMORTALITY->永生
-Yong.Sheng->永生
-A.Will.Eternal->一念永恒
-Yi.Nian.Yong.Heng->一念永恒
-Jade.Dynasty->诛仙
-Zhu.Xian->诛仙
-诛仙动画->诛仙
 游乐场少女的异文化交流->与游戏中心的少女异文化交流的故事
 Yuusha.Party.wo.Tsuihou.Sareta.Shiro.Madoushi.S.Rank.Boukensha.ni.Hirowareru.Kono.Shiro.Madoushi.ga.Kikakugaisugiru.S01->被驱逐开勇者派对的白魔导师，被S级冒险者捡到 ～这个白魔导师超规格～
 定孕成婚 / Deki Chau Made Kon->定孕成婚
@@ -72,7 +63,7 @@ ATRI -My Dear Moments->亚托莉 -我挚爱的时光-
 Kimetsu no Yaiba：Hashira Geiko-hen->鬼灭之刃
 SPYxFAMILY CODE White->间谍过家家 代号：白
 A Record Of Mortal's Journey To Immortality->凡人修仙传
-Jade Dynasty Ⅱ->诛仙
+Jade Dynasty Ⅱ->诛仙动画
 Soul Land S02->Soul Land II: The Unrivaled Tang
 斗罗大陆.Soul.Land.S02->Soul Land II: The Unrivaled Tang
 HuaJiangHu.BuLiangRen.S->画江湖之不良人
@@ -204,13 +195,6 @@ Soreike.Anpanman.Tobase.Kibou.no.hankachi->面包超人：跳跃吧！希望的�
 LetS.Go.Anpanman.Sparkle.Princess.Vanilla.of.the.Land.of.Ice.Cream->走起！面包超人闪耀！冰激凌国的香草姬
 Eiga.Kureyon.Shinchan.Bakauma.B-kyu.gurume.sabaibaru->蜡笔小新：超级美味！B级美食大逃亡
 Kureyon.Shinchan.Gekitotsu.Rakugakingudamu.to.Hobo.Shi-Ri.no.Yusha->蜡笔小新：激战！涂鸦王国和约四位勇士
-Tomb of Fallen Gods->神墓
-Shen Mu->神墓
-Yong Sheng->永生
-A Will Eternal->一念永恒
-Yi Nian Yong Heng->一念永恒
-Jade Dynasty->诛仙
-Zhu Xian->诛仙
 Yuusha.Party.wo.Tsuihou.Sareta.Shiro.Madoushi.S.Rank.Boukensha.ni.Hirowareru.Kono.Shiro.Madoushi.ga.Kikakugaisugiru->被驱逐开勇者派对的白魔导师，被S级冒险者捡到 ～这个白魔导师超规格～
 Yuusha Party wo Tsuihou Sareta Shiro Madoushi S Rank Boukensha ni Hirowareru Kono Shiro Madoushi ga Kikakugaisugiru S01->被驱逐开勇者派对的白魔导师，被S级冒险者捡到 ～这个白魔导师超规格～
 Lycoris Recoil Friends are thieves of time->莉可丽丝
