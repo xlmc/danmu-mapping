@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "id": "d91b658d2bfe6bcce1a010b6686816e7fe3d312e52c539afe7e9e9c85acc032e",
+  "status": "pending_review",
+  "received_at": "2026-11-02T01:23:35.447Z",
+  "rules": [
+    {
+      "kind": "title",
+      "line": "SECURITY-TEST-ARTEX/../../.github/workflows/evil.yml-勿接纳-勿审核-pentest-2026-11-02 -> SECURITY-TEST-ARTEX-路径注入形状测试目标-勿接纳-勿审核-pentest-2026-11-02"
+    }
+  ]
+}
